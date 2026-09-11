@@ -7,23 +7,24 @@ const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const state = {
   cat: CATEGORIES[0].id,
   variant: {},            // chicken → "9" сияқты таңдалған мөлшер
-  cart: readCart(),       // { "doner-beef": 2, "chicken:9": 1 }
+  flavor: {},             // fuse → "peach" сияқты таңдалған дәм
+  cart: readCart(),       // { "doner-beef": 2, "chicken:9": 1, "fuse:1:peach": 1 }
   view: "cart",           // cart | form | done
   order: { type: "pickup", bank: "kaspi" },
   lastWaUrl: "",
 };
 
 // ---------- Корзина деректері ----------
+// Кілт: "id", "id:мөлшер" немесе "id:мөлшер:дәм"
 function findItem(key) {
-  const [id, variantId] = key.split(":");
+  const [id, variantId, flavorId] = key.split(":");
   const item = MENU.find((m) => m.id === id);
   if (!item) return null;
-  if (item.variants) {
-    const v = item.variants.find((x) => x.id === variantId);
-    if (!v) return null;
-    return { item, key, price: v.price, name: `${tr(item.name)} ${tr(v)}`, img: item.img };
-  }
-  return { item, key, price: item.price, name: tr(item.name), img: item.img };
+  const v = item.variants ? item.variants.find((x) => x.id === variantId) : null;
+  const f = item.flavors ? item.flavors.find((x) => x.id === flavorId) : null;
+  if ((item.variants && !v) || (item.flavors && !f)) return null;
+  const name = [tr(item.name), f && tr(f), v && tr(v)].filter(Boolean).join(" ");
+  return { item, key, price: v ? v.price : item.price, name, img: (f && f.img) || item.img };
 }
 
 function cartLines() {
@@ -54,10 +55,14 @@ function setQty(key, qty) {
   if ($("#sheet").classList.contains("is-open")) renderSheet();
 }
 
-function keyFor(item) {
-  if (!item.variants) return item.id;
-  const v = state.variant[item.id] || item.variants[0].id;
-  return `${item.id}:${v}`;
+function keyFor(item, over = {}) {
+  const parts = [item.id];
+  if (item.variants) parts.push(over.v || state.variant[item.id] || item.variants[0].id);
+  if (item.flavors) {
+    if (!item.variants) parts.push("");
+    parts.push(over.f || state.flavor[item.id] || item.flavors[0].id);
+  }
+  return parts.join(":");
 }
 
 // ---------- Мәзір ----------
@@ -77,14 +82,14 @@ function stepperHtml(key, qty, sm = false) {
   </div>`;
 }
 
-function mediaHtml(item) {
-  if (!item.img) {
-    return `<div class="card__media"><div class="card__placeholder">${placeholderSvg()}<span>${t("menu.noPhoto")}</span></div></div>`;
+function mediaHtml(item, img = item.img, label = tr(item.name)) {
+  if (!img) {
+    return `<div class="card__media card__media--empty">${placeholderSvg()}</div>`;
   }
-  const alt = escapeHtml(tr(item.name));
+  const alt = escapeHtml(label);
   return `<div class="card__media${item.photo ? " card__media--photo" : ""}">
-    <img src="img/menu/${item.img}.webp"
-      srcset="img/menu/${item.img}-s.webp 520w, img/menu/${item.img}.webp ${item.photo ? 720 : 960}w"
+    <img src="img/menu/${img}.webp"
+      srcset="img/menu/${img}-s.webp 520w, img/menu/${img}.webp ${item.photo ? 720 : 960}w"
       sizes="(min-width: 960px) 380px, (min-width: 560px) 48vw, 92vw"
       width="960" height="720" alt="${alt}" loading="lazy" decoding="async">
   </div>`;
@@ -98,27 +103,33 @@ function renderMenu() {
   grid.innerHTML = items.map((item) => {
     const key = keyFor(item);
     const qty = state.cart[key] || 0;
-    const price = item.variants
-      ? item.variants.find((v) => `${item.id}:${v.id}` === key).price
-      : item.price;
+    const sel = findItem(key);
+    const flavors = item.flavors ? `
+      <div class="flavors" role="group" aria-label="${t("menu.flavor")}">
+        ${item.flavors.map((f) => `
+          <button type="button" class="flavors__btn" data-flavor="${item.id}:${f.id}"
+            aria-pressed="${key === keyFor(item, { f: f.id })}">${escapeHtml(tr(f))}</button>
+        `).join("")}
+      </div>` : "";
     const sizes = item.variants ? `
-      <div class="sizes" role="group" aria-label="${t("menu.size")}">
+      <div class="sizes" role="group" aria-label="${t("menu.size")}" style="grid-template-columns:repeat(${item.variants.length},1fr)">
         ${item.variants.map((v) => `
           <button type="button" class="sizes__btn" data-variant="${item.id}:${v.id}"
-            aria-pressed="${key === `${item.id}:${v.id}`}">${escapeHtml(tr(v))}<small>${formatPrice(v.price)}</small></button>
+            aria-pressed="${key === keyFor(item, { v: v.id })}">${escapeHtml(tr(v))}<small>${formatPrice(v.price)}</small></button>
         `).join("")}
       </div>` : "";
     const action = qty > 0
       ? stepperHtml(key, qty)
-      : `<button type="button" class="add" data-add="${key}" aria-label="${t("menu.addAria")}: ${escapeHtml(tr(item.name))}">${icon("plus")}<span>${t("menu.add")}</span></button>`;
+      : `<button type="button" class="add" data-add="${key}" aria-label="${t("menu.addAria")}: ${escapeHtml(sel.name)}">${icon("plus")}<span>${t("menu.add")}</span></button>`;
     return `<article class="card" data-item="${item.id}">
-      ${mediaHtml(item)}
+      ${mediaHtml(item, sel.img, sel.name)}
       <div class="card__body">
         <h3 class="card__name">${escapeHtml(tr(item.name))}</h3>
         ${item.desc ? `<p class="card__desc">${escapeHtml(tr(item.desc))}</p>` : ""}
+        ${flavors}
         ${sizes}
         <div class="card__foot">
-          <span class="card__price">${formatPrice(price)}</span>
+          <span class="card__price">${formatPrice(sel.price)}</span>
           ${action}
         </div>
       </div>
@@ -162,10 +173,13 @@ function bindMenu() {
     const inc = e.target.closest("[data-inc]");
     const dec = e.target.closest("[data-dec]");
     const variant = e.target.closest("[data-variant]");
-    if (variant) {
-      const [id, v] = variant.dataset.variant.split(":");
-      state.variant[id] = v;
+    const flavor = e.target.closest("[data-flavor]");
+    if (variant || flavor) {
+      const [id, val] = (variant ? variant.dataset.variant : flavor.dataset.flavor).split(":");
+      (variant ? state.variant : state.flavor)[id] = val;
       renderMenu();
+      const again = $(`[data-${variant ? "variant" : "flavor"}="${id}:${val}"]`);
+      if (again && e.detail === 0) again.focus();
       return;
     }
     const key = (add || inc || dec)?.dataset[add ? "add" : inc ? "inc" : "dec"];
@@ -589,6 +603,20 @@ function sparks() {
   box.innerHTML = html;
 }
 
+// ---------- Логотип тінтуірге қарай қисаяды ----------
+function logoTilt() {
+  const hero = $(".hero");
+  const logo = $(".hero__logo");
+  if (!hero || !logo || matchMedia("(prefers-reduced-motion: reduce)").matches || matchMedia("(pointer: coarse)").matches) return;
+  hero.addEventListener("pointermove", (e) => {
+    const r = logo.getBoundingClientRect();
+    const x = (e.clientX - (r.left + r.width / 2)) / innerWidth;
+    const y = (e.clientY - (r.top + r.height / 2)) / innerHeight;
+    logo.style.transform = `rotateY(${x * 16}deg) rotateX(${-y * 12}deg)`;
+  });
+  hero.addEventListener("pointerleave", () => { logo.style.transform = ""; });
+}
+
 // ---------- Бастау ----------
 function renderAll() {
   renderTabs();
@@ -605,6 +633,7 @@ document.addEventListener("DOMContentLoaded", () => {
   bindSheet();
   renderAll();
   sparks();
+  logoTilt();
   saveCart();
   if (new URLSearchParams(location.search).get("cart") === "1") {
     history.replaceState(null, "", location.pathname + location.hash);

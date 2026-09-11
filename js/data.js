@@ -10,7 +10,16 @@ const CATEGORIES = [
   { id: "chicken",  kz: "Чикен",   ru: "Чикен" },
   { id: "snacks",   kz: "Снэктер", ru: "Снэки" },
   { id: "pizza",    kz: "Пицца",   ru: "Пицца" },
+  { id: "drinks",   kz: "Сусындар", ru: "Напитки" },
 ];
+
+// Сусын көлемдері
+const VOL = {
+  s025: { id: "025", kz: "0,25 л", ru: "0,25 л" },
+  s05:  { id: "05",  kz: "0,5 л",  ru: "0,5 л" },
+  s1:   { id: "1",   kz: "1 л",    ru: "1 л" },
+};
+const soda = [{ ...VOL.s05, price: 600 }, { ...VOL.s1, price: 700 }];
 
 const MENU = [
   // ---- Донер ----
@@ -231,9 +240,42 @@ const MENU = [
     },
   },
   {
-    id: "pizza-sweet-chili", cat: "pizza", img: null, price: 2990,
+    // уақытша фото: тауық пиццасы басқа ракурстан (Sweet Chili өз фотосы жоқ)
+    id: "pizza-sweet-chili", cat: "pizza", img: "pizza-sweet-chili", price: 2990,
     name: { kz: "Цыплёнок Sweet Chili", ru: "Цыплёнок Sweet Chili" },
-    desc: null,
+    desc: {
+      kz: "Тауық еті, моцарелла ірімшігі және тәтті-ащы Sweet Chili соусы қосылған пицца.",
+      ru: "Пицца с курицей, моцареллой и сладко-острым соусом Sweet Chili.",
+    },
+  },
+
+  // ---- Сусындар ----
+  { id: "cola",   cat: "drinks", img: "drink-cola",   name: { kz: "Coca-Cola", ru: "Coca-Cola" }, desc: null, variants: soda },
+  { id: "fanta",  cat: "drinks", img: "drink-fanta",  name: { kz: "Fanta",     ru: "Fanta" },     desc: null, variants: soda },
+  { id: "sprite", cat: "drinks", img: "drink-sprite", name: { kz: "Sprite",    ru: "Sprite" },    desc: null, variants: soda },
+  {
+    id: "fuse", cat: "drinks", img: "drink-fuse-mango",
+    name: { kz: "Fuse tea", ru: "Fuse tea" }, desc: null, variants: soda,
+    flavors: [
+      { id: "mango",     kz: "Манго-түймедақ", ru: "Манго-ромашка", img: "drink-fuse-mango" },
+      { id: "pineapple", kz: "Манго-ананас",   ru: "Манго-ананас",  img: "drink-fuse-pineapple" },
+      { id: "peach",     kz: "Шабдалы",        ru: "Персик",        img: "drink-fuse-peach" },
+    ],
+  },
+  {
+    id: "piko", cat: "drinks", img: "drink-piko-orange",
+    name: { kz: "Piko Pulpy", ru: "Piko Pulpy" }, desc: null,
+    variants: [{ ...VOL.s025, price: 400 }, { ...VOL.s05, price: 650 }, { ...VOL.s1, price: 900 }],
+    flavors: [
+      { id: "orange", kz: "Апельсин",      ru: "Апельсин",         img: "drink-piko-orange" },
+      { id: "grape",  kz: "Жүзім-алоэ",    ru: "Виноград-алоэ",    img: "drink-piko-grape" },
+    ],
+  },
+  { id: "ayran", cat: "drinks", img: "drink-ayran", price: 450, name: { kz: "Айран", ru: "Айран" }, desc: null },
+  {
+    id: "bonaqua", cat: "drinks", img: null,
+    name: { kz: "Bon Aqua су", ru: "Вода Bon Aqua" }, desc: null,
+    variants: [{ ...VOL.s05, price: 400 }, { ...VOL.s1, price: 500 }],
   },
 ];
 

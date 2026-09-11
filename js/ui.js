@@ -32,6 +32,32 @@ function logoSvg(variant = "compact") {
   </svg>`;
 }
 
+// Басты беттегі үлкен «тірі» логотип: үш қабат жалын, сызылып шығатын жапсырма
+function heroLogoSvg() {
+  const flame = (cls, x, y, s, fill) =>
+    `<g transform="translate(${x} ${y}) scale(${s})"><g class="hl-flame ${cls}"><path d="${FLAME_PATH}" fill="${fill}"/></g></g>`;
+  return `<svg class="hero-logo" viewBox="0 0 420 330" role="img" aria-label="ОТ ДОНЕР — кухня на углях, since 2020" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="hl-heat" cx="50%" cy="100%" r="60%">
+        <stop offset="0" stop-color="#ff9f43" stop-opacity=".55"/>
+        <stop offset=".55" stop-color="#f2451e" stop-opacity=".18"/>
+        <stop offset="1" stop-color="#f2451e" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <ellipse class="hl-heat" cx="210" cy="150" rx="150" ry="120" fill="url(#hl-heat)"/>
+    ${flame("hl-flame--back", 148, 22, 3.1, "#b8260e")}
+    ${flame("hl-flame--mid", 158, 44, 2.6, "#f2451e")}
+    ${flame("hl-flame--core", 181, 96, 1.45, "#ffb347")}
+    <path class="hl-dash" d="M34 150h84M302 150h84" stroke="#f2451e" stroke-width="4" stroke-linecap="round"/>
+    <path class="hl-badge" pathLength="1" d="M8 176l16-16h372l16 16v92l-16 16H24l-16-16z" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linejoin="round"/>
+    <g class="hl-roll">${rollSvg(152, 141, 2.4)}</g>
+    <text class="hl-name" x="210" y="236" text-anchor="middle" font-family="Unbounded, 'Arial Black', sans-serif" font-weight="900" font-size="52" letter-spacing="-1.2" fill="currentColor">ОТ ДОНЕР</text>
+    <path class="hl-dash" d="M34 256h54M34 264h40M332 256h54M346 264h40" stroke="#f2451e" stroke-width="3" stroke-linecap="round"/>
+    <text class="hl-tag" x="210" y="265" text-anchor="middle" font-family="Onest, Arial, sans-serif" font-weight="800" font-size="17" letter-spacing="3" fill="#f2451e">КУХНЯ НА УГЛЯХ</text>
+    <text class="hl-since" x="210" y="320" text-anchor="middle" font-family="Onest, Arial, sans-serif" font-weight="700" font-size="19" letter-spacing="1" fill="currentColor">since 2020</text>
+  </svg>`;
+}
+
 const ICONS = {
   bag: '<path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
@@ -69,7 +95,9 @@ function placeholderSvg() {
 }
 
 function fillLogos(root = document) {
-  root.querySelectorAll("[data-logo]").forEach((el) => { el.innerHTML = logoSvg(el.dataset.logo); });
+  root.querySelectorAll("[data-logo]").forEach((el) => {
+    el.innerHTML = el.dataset.logo === "hero" ? heroLogoSvg() : logoSvg(el.dataset.logo);
+  });
   root.querySelectorAll("[data-icon]").forEach((el) => {
     el.insertAdjacentHTML("afterbegin", icon(el.dataset.icon));
     el.removeAttribute("data-icon");

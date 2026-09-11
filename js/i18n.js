@@ -33,6 +33,7 @@ const I18N = {
     "menu.more": "Көбейту",
     "menu.noPhoto": "Фото жақында",
     "menu.size": "Мөлшері",
+    "menu.flavor": "Дәмі",
 
     "cart.title": "Корзина",
     "cart.empty": "Корзина бос. Мәзірден ұнаған тағамды таңдаңыз.",
@@ -171,6 +172,7 @@ const I18N = {
     "menu.more": "Больше",
     "menu.noPhoto": "Фото скоро",
     "menu.size": "Размер",
+    "menu.flavor": "Вкус",
 
     "cart.title": "Корзина",
     "cart.empty": "Корзина пуста. Выберите что-нибудь в меню.",
