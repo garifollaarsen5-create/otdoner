@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>QR код — ОТ ДОНЕР</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#1a1411">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Unbounded:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .qr-layout { display: grid; gap: 32px; align-items: start; }
+    @media (min-width: 900px) { .qr-layout { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); } }
+    .qr-tools { display: grid; gap: 18px; }
+    .qr-tools .row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    .poster {
+      position: relative; overflow: hidden;
+      width: 100%; max-width: 560px; aspect-ratio: 1 / 1.414; margin-inline: auto;
+      background: var(--coal); color: var(--ash);
+      border: 1px solid var(--line); border-radius: 22px;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      padding: 7% 8% 0;
+      container-type: inline-size;
+    }
+    .poster::before {
+      content: ""; position: absolute; inset: 40% -20% -10%; z-index: 0;
+      background: radial-gradient(55% 45% at 50% 80%, rgba(255, 120, 40, .45), transparent 70%);
+    }
+    .poster > * { position: relative; z-index: 1; }
+    .poster__logo { width: 44%; color: var(--ash); }
+    .poster__logo svg { width: 100%; height: auto; display: block; }
+    .poster__title { font-family: var(--f-display); font-weight: 900; font-size: 8.4cqw; line-height: .98; letter-spacing: -0.03em; margin: 6% 0 0; }
+    .poster__ru { font-weight: 700; color: var(--smoke); font-size: 3.6cqw; margin: 2.4% 0 0; }
+    .poster__qr { width: 50%; margin-top: 6%; background: #fff; border-radius: 6cqw; padding: 3.4cqw; box-shadow: 0 0 0 1.4cqw var(--ember); }
+    .poster__qr svg { display: block; width: 100%; height: auto; }
+    .poster__sub { font-weight: 700; font-size: 3.4cqw; margin: 6% 0 0; }
+    .poster__url { color: var(--smoke); font-size: 2.8cqw; margin: 1.4% 0 0; word-break: break-all; }
+    .poster__flames {
+      margin-top: auto; width: calc(100% + 18%); height: 16%;
+      background: url("img/flames.svg") repeat-x left bottom / auto 100%;
+      border-bottom: 3cqw solid var(--ember);
+    }
+
+    @media print {
+      @page { size: A4; margin: 0; }
+      html, body { background: var(--coal) !important; }
+      body > *:not(main), .page-head, .qr-tools { display: none !important; }
+      main, .section, .wrap, .qr-layout { padding: 0 !important; margin: 0 !important; max-width: none !important; display: block !important; }
+      .poster { max-width: none; width: 210mm; height: 297mm; aspect-ratio: auto; border: 0; border-radius: 0; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+  <script src="js/config.js" defer></script>
+  <script src="js/i18n.js" defer></script>
+  <script src="js/ui.js" defer></script>
+  <script src="js/vendor/qrcode.js" defer></script>
+  <script src="js/qr.js" defer></script>
+</head>
+<body>
+
+<header class="header">
+  <div class="wrap header__row">
+    <a class="header__logo" href="index.html" data-logo="compact" aria-label="ОТ ДОНЕР"></a>
+    <nav class="nav" aria-label="Menu">
+      <a href="index.html#menu" data-i18n="nav.menu">Мәзір</a>
+      <a href="reviews.html" data-i18n="nav.reviews">Пікірлер</a>
+      <a href="index.html#contacts" data-i18n="nav.contacts">Байланыс</a>
+    </nav>
+    <div class="header__tools">
+      <div class="lang" role="group" data-i18n-aria="lang.label">
+        <button type="button" class="lang__btn" data-lang="kz" aria-pressed="true">KZ</button>
+        <button type="button" class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <h1 class="h2" data-i18n="qr.title">Сайтқа апаратын QR код</h1>
+      <p class="lead" data-i18n="qr.lead"></p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="wrap qr-layout">
+      <div class="qr-tools panel">
+        <div class="field">
+          <label class="field__label" for="qr-url" data-i18n="qr.url">Сайт мекенжайы</label>
+          <input class="input" id="qr-url" type="url" inputmode="url" spellcheck="false">
+        </div>
+        <div class="row">
+          <button type="button" class="btn btn--fire" id="qr-print"><span data-i18n="qr.print">Басып шығару</span></button>
+          <button type="button" class="btn btn--ghost" id="qr-png"><span data-i18n="qr.download">PNG жүктеу</span></button>
+        </div>
+      </div>
+
+      <div class="poster" id="poster">
+        <div class="poster__logo" data-logo="full"></div>
+        <h2 class="poster__title">Сканерле де,<br>тапсырыс бер</h2>
+        <p class="poster__ru">Сканируй и заказывай</p>
+        <div class="poster__qr" id="qr-box"></div>
+        <p class="poster__sub">Мәзір, жеткізу, пікірлер — 24/7</p>
+        <p class="poster__url" id="qr-url-text"></p>
+        <div class="poster__flames" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+</body>
+</html>

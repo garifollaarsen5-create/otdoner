@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Пікірлер — ОТ ДОНЕР</title>
+  <meta name="description" content="ОТ ДОНЕР туралы клиенттердің пікірлері мен фотолары. Ақтау.">
+  <meta name="theme-color" content="#1a1411">
+  <meta property="og:title" content="Пікірлер — ОТ ДОНЕР">
+  <meta property="og:image" content="img/og.jpg">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Unbounded:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/config.js" defer></script>
+  <script src="js/i18n.js" defer></script>
+  <script src="js/ui.js" defer></script>
+  <script src="js/reviews.js" defer></script>
+</head>
+<body>
+
+<header class="header">
+  <div class="wrap header__row">
+    <a class="header__logo" href="index.html" data-logo="compact" aria-label="ОТ ДОНЕР"></a>
+    <nav class="nav" aria-label="Menu">
+      <a href="index.html#menu" data-i18n="nav.menu">Мәзір</a>
+      <a href="reviews.html" aria-current="page" data-i18n="nav.reviews">Пікірлер</a>
+      <a href="index.html#contacts" data-i18n="nav.contacts">Байланыс</a>
+    </nav>
+    <div class="header__tools">
+      <div class="lang" role="group" data-i18n-aria="lang.label">
+        <button type="button" class="lang__btn" data-lang="kz" aria-pressed="true">KZ</button>
+        <button type="button" class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
+      </div>
+      <a class="cart-icon" href="index.html?cart=1" data-icon="bag" data-i18n-aria="cart.open">
+        <span class="cart-icon__count" hidden>0</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <div class="page-head__row">
+        <div>
+          <h1 class="h2" data-i18n="rev.pageTitle">Клиенттер пікірі</h1>
+          <p class="lead" data-i18n="rev.pageLead"></p>
+        </div>
+        <a class="btn btn--fire" href="index.html#review"><span data-i18n="rev.leave">Пікір қалдыру</span></a>
+      </div>
+      <p class="lead" id="rev-count" style="margin-top:18px" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0">
+    <div class="wrap">
+      <div class="rev-list rev-list--masonry" id="rev-all" aria-live="polite"></div>
+      <div class="more">
+        <button type="button" class="btn btn--ghost" id="rev-more" hidden><span data-i18n="rev.more">Тағы көрсету</span></button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__row">
+      <div class="footer__logo" data-logo="full"></div>
+      <nav class="footer__links" aria-label="Footer">
+        <a href="index.html#menu" data-i18n="nav.menu">Мәзір</a>
+        <a href="index.html" data-i18n="nav.home">Басты бет</a>
+        <a href="index.html#contacts" data-i18n="nav.contacts">Байланыс</a>
+      </nav>
+    </div>
+    <small>© <span data-year>2026</span> ОТ ДОНЕР · <span data-i18n="footer.since">since 2020 · Ақтау</span></small>
+  </div>
+</footer>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Фото">
+  <button type="button" class="icon-btn" data-lb-close data-icon="close" aria-label="Жабу"></button>
+  <img alt="">
+</div>
+
+</body>
+</html>
