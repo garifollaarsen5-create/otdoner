@@ -11,5 +11,5 @@ window.OTDONER_CONFIG = {
   reviewsTable: "otdoner_reviews",
 
   // QR код апаратын сайт мекенжайы (бос болса — ағымдағы домен)
-  siteUrl: "",
+  siteUrl: "https://otdoner.vercel.app/",
 };
