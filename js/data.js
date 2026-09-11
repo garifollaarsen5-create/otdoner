@@ -110,22 +110,22 @@ const MENU = [
     },
   },
   {
-    id: "bastyrma-chicken", cat: "special", img: null, price: 2090,
+    id: "bastyrma-chicken", cat: "special", img: "bastyrma", price: 2090,
     name: { kz: "Бастырма тауық етімен", ru: "Бастырма с курицей" },
     desc: null,
   },
   {
-    id: "bastyrma-beef", cat: "special", img: null, price: 2190,
+    id: "bastyrma-beef", cat: "special", img: "bastyrma", price: 2190,
     name: { kz: "Бастырма сиыр етімен", ru: "Бастырма с говядиной" },
     desc: null,
   },
   {
-    id: "green-doner", cat: "special", img: null, price: 1890,
+    id: "green-doner", cat: "special", img: "green-doner", price: 1890,
     name: { kz: "Green Doner", ru: "Green Doner" },
     desc: null,
   },
   {
-    id: "twister", cat: "special", img: null, price: 1690,
+    id: "twister", cat: "special", img: "twister", price: 1690,
     name: { kz: "Твистер", ru: "Твистер" },
     desc: null,
   },
