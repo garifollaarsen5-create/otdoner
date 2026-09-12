@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title data-i18n-title="meta.title">ОТ ДОНЕР — отта піскен фаст-фуд, Ақтау</title>
-  <meta name="description" content="ОТ ДОНЕР — кухня на углях, Ақтау. Донер, шаурма, багет, пицца, чикен. Онлайн тапсырыс WhatsApp арқылы, жеткізу және өзің алып кету. 24/7.">
+  <meta name="description" content="ОТ ДОНЕР — ыстық шоқта піскен фаст-фуд, Ақтау. Донер, шаурма, багет, пицца, чикен. Онлайн тапсырыс WhatsApp арқылы, жеткізу және өзің алып кету. 24/7.">
   <meta name="theme-color" content="#1a1411">
   <meta property="og:type" content="website">
   <meta property="og:title" content="ОТ ДОНЕР — кухня на углях">
@@ -19,6 +19,7 @@
   <script src="js/data.js" defer></script>
   <script src="js/i18n.js" defer></script>
   <script src="js/ui.js" defer></script>
+  <script src="js/stoplist.js" defer></script>
   <script src="js/app.js" defer></script>
   <script src="js/reviews.js" defer></script>
 </head>
@@ -57,7 +58,7 @@
         <div class="hero__logo" data-logo="hero"></div>
       </div>
       <div class="hero__rest">
-        <p class="hero__sub" data-i18n="hero.sub">Кухня на углях — Ақтаудағы топ фаст-фуд. Донер, шаурма, пицца және чикен көмір үстінде дайындалады.</p>
+        <p class="hero__sub" data-i18n="hero.sub">Ыстық шоқта піскен ет, балғын көкөніс, фирмалық соус. Ақтаудағы топ фаст-фуд: донер, шаурма, пицца, чикен.</p>
         <div class="hero__actions">
           <a class="btn btn--fire" href="#menu"><span data-i18n="hero.cta">Тапсырыс беру</span></a>
           <a class="btn btn--ghost" id="wa-link" href="https://wa.me/77477070362" target="_blank" rel="noopener" data-icon="wa"><span>WhatsApp</span></a>
@@ -220,6 +221,8 @@
     <div class="sheet__foot" id="sheet-foot"></div>
   </div>
 </div>
+
+<div id="toast" role="status" aria-live="polite"></div>
 
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Фото">
   <button type="button" class="icon-btn" data-lb-close data-icon="close" aria-label="Жабу"></button>

@@ -48,6 +48,7 @@ function saveCart() {
 }
 
 function setQty(key, qty) {
+  if (qty > 0 && StopList.has(key.split(":")[0])) return;
   if (qty <= 0) delete state.cart[key];
   else state.cart[key] = Math.min(qty, 99);
   saveCart();
@@ -118,11 +119,15 @@ function renderMenu() {
             aria-pressed="${key === keyFor(item, { v: v.id })}">${escapeHtml(tr(v))}<small>${formatPrice(v.price)}</small></button>
         `).join("")}
       </div>` : "";
-    const action = qty > 0
-      ? stepperHtml(key, qty)
-      : `<button type="button" class="add" data-add="${key}" aria-label="${t("menu.addAria")}: ${escapeHtml(sel.name)}">${icon("plus")}<span>${t("menu.add")}</span></button>`;
-    return `<article class="card" data-item="${item.id}">
+    const stopped = StopList.has(item.id);
+    const action = stopped
+      ? `<span class="stop-tag">${t("menu.stopped")}</span>`
+      : qty > 0
+        ? stepperHtml(key, qty)
+        : `<button type="button" class="add" data-add="${key}" aria-label="${t("menu.addAria")}: ${escapeHtml(sel.name)}">${icon("plus")}<span>${t("menu.add")}</span></button>`;
+    return `<article class="card${stopped ? " card--stopped" : ""}" data-item="${item.id}">
       ${mediaHtml(item, sel.img, sel.name)}
+      ${stopped ? `<span class="card__stop">${t("menu.stopped")}</span>` : ""}
       <div class="card__body">
         <h3 class="card__name">${escapeHtml(tr(item.name))}</h3>
         ${item.desc ? `<p class="card__desc">${escapeHtml(tr(item.desc))}</p>` : ""}
@@ -288,7 +293,7 @@ function renderSheet() {
 
   // ---- Тапсырыс формасы ----
   const o = state.order;
-  const branchOpts = BRANCHES.map((b) =>
+  const branchOpts = pickupBranches().map((b) =>
     `<option value="${b.id}" ${o.branch === b.id ? "selected" : ""}>${escapeHtml(tr(b.name))} — ${escapeHtml(tr(b.addr))}</option>`).join("");
   body.innerHTML = `<form class="form" id="order-form" novalidate>
     <div class="field">
@@ -565,6 +570,12 @@ function bindSheet() {
   $$("[data-open-cart]").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); openSheet("cart"); }));
 }
 
+// «Өзім аламын» қолжетімді филиалдар
+function pickupBranches() {
+  const list = BRANCHES.filter((b) => b.pickup);
+  return list.length ? list : BRANCHES;
+}
+
 // ---------- Филиалдар ----------
 function isOpen(b) {
   if (b.allDay) return true;
@@ -584,6 +595,39 @@ function renderBranches() {
       <div class="branch__foot"><a class="btn btn--ghost btn--block" href="${b.link}" target="_blank" rel="noopener">${icon("map")}<span>${t("contacts.2gis")}</span></a></div>
     </article>`;
   }).join("");
+}
+
+// ---------- Стоп-лист ----------
+// Стопқа түскен тағамдар корзинадан алынады
+function pruneStopped() {
+  const removed = Object.keys(state.cart).filter((key) => StopList.has(key.split(":")[0]));
+  if (!removed.length) return false;
+  removed.forEach((key) => delete state.cart[key]);
+  saveCart();
+  return true;
+}
+
+async function refreshStopList({ quiet = false } = {}) {
+  if (!StopList.configured()) return;
+  try {
+    await StopList.load();
+  } catch (e) {
+    console.error(e);
+    return;
+  }
+  renderMenu();
+  const changed = pruneStopped();
+  if ($("#sheet").classList.contains("is-open")) renderSheet();
+  if (changed && !quiet) toast(t("cart.stopRemoved"));
+}
+
+function toast(text) {
+  const el = $("#toast");
+  if (!el) return;
+  el.textContent = text;
+  el.classList.add("is-on");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove("is-on"), 5000);
 }
 
 // ---------- Ұшқындар ----------
@@ -635,6 +679,9 @@ document.addEventListener("DOMContentLoaded", () => {
   sparks();
   logoTilt();
   saveCart();
+  refreshStopList({ quiet: true });
+  setInterval(() => refreshStopList(), 60 * 1000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshStopList(); });
   if (new URLSearchParams(location.search).get("cart") === "1") {
     history.replaceState(null, "", location.pathname + location.hash);
     openSheet("cart");

@@ -10,6 +10,9 @@ window.OTDONER_CONFIG = {
   supabaseAnonKey: "",
   reviewsTable: "otdoner_reviews",
 
+  // stopmenu панеліндегі сайттың коды (стоп-лист осы бойынша оқылады)
+  siteSlug: "otdoner",
+
   // QR код апаратын сайт мекенжайы (бос болса — ағымдағы домен)
   siteUrl: "https://otdoner.vercel.app/",
 };

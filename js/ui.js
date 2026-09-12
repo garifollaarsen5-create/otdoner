@@ -89,7 +89,7 @@ const WHY_ICONS = {
   sauce: `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 3v5M20 8h8l2 7H18z"/><path d="M17 15h14l2 6v19a4 4 0 0 1-4 4H19a4 4 0 0 1-4-4V21z"/><path d="M15 28c4-3 8 3 18 0"/></svg>`,
 };
 
-// Суреті жоқ тағамға арналған көмір ролл белгісі
+// Суреті жоқ тағамға арналған брендтік белгі
 function placeholderSvg() {
   return `<svg viewBox="0 0 96 70" aria-hidden="true"><g transform="translate(28 0)"><path d="${FLAME_PATH}" fill="currentColor"/></g>${rollSvg(22, 38, 1.1).replace('fill="#1a1411"', 'fill="#231b17"')}</svg>`;
 }
