@@ -6,8 +6,8 @@ window.OTDONER_CONFIG = {
   whatsapp: "77477070362",
   instagram: "https://www.instagram.com/otdoner",
 
-  supabaseUrl: "",
-  supabaseAnonKey: "",
+  supabaseUrl: "https://nfvtofnvzhdxwnfhycsj.supabase.co",
+  supabaseAnonKey: "sb_publishable_TGvxRghNOWTwwU_CmpJurA_ANAQhne-",
   reviewsTable: "otdoner_reviews",
 
   // stopmenu панеліндегі сайттың коды (стоп-лист осы бойынша оқылады)
