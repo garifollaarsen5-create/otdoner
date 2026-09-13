@@ -57,7 +57,9 @@ const Reviews = (() => {
     const months = {
       kz: ["қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым", "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан"],
       ru: ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"],
+      en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
     }[LANG];
+    if (LANG === "en") return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
     return LANG === "kz"
       ? `${d.getFullYear()} ж. ${d.getDate()} ${months[d.getMonth()]}`
       : `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
@@ -195,6 +197,7 @@ async function loadLatestReviews() {
 // ---- reviews.html: барлық пікірлер ----
 function reviewWord(n) {
   if (LANG === "kz") return "пікір";
+  if (LANG === "en") return n === 1 ? "review" : "reviews";
   const d10 = n % 10, d100 = n % 100;
   if (d10 === 1 && d100 !== 11) return "отзыв";
   if (d10 >= 2 && d10 <= 4 && (d100 < 12 || d100 > 14)) return "отзыва";

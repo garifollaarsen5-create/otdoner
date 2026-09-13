@@ -2,22 +2,23 @@
 // Бағаны өзгерту үшін тек price мәнін түзетіңіз.
 
 const CATEGORIES = [
-  { id: "doner",    kz: "Донер",   ru: "Донер" },
-  { id: "shawarma", kz: "Шаурма",  ru: "Шаурма" },
-  { id: "baguette", kz: "Багет",   ru: "Багет" },
-  { id: "special",  kz: "Nan Et және басқа", ru: "Nan Et и другое" },
-  { id: "hotdog",   kz: "Хот-дог", ru: "Хот-дог" },
-  { id: "chicken",  kz: "Чикен",   ru: "Чикен" },
-  { id: "snacks",   kz: "Снэктер", ru: "Снэки" },
-  { id: "pizza",    kz: "Пицца",   ru: "Пицца" },
-  { id: "drinks",   kz: "Сусындар", ru: "Напитки" },
+  { id: "new",      kz: "Жаңалықтар", ru: "Новинки",  en: "New" },
+  { id: "doner",    kz: "Донер",      ru: "Донер",    en: "Doner" },
+  { id: "shawarma", kz: "Шаурма",     ru: "Шаурма",   en: "Shawarma" },
+  { id: "baguette", kz: "Багет",      ru: "Багет",    en: "Baguette" },
+  { id: "special",  kz: "Nan Et",     ru: "Nan Et",   en: "Nan Et" },
+  { id: "hotdog",   kz: "Хот-дог",    ru: "Хот-дог",  en: "Hot dog" },
+  { id: "chicken",  kz: "Чикен",      ru: "Чикен",    en: "Chicken" },
+  { id: "snacks",   kz: "Снэктер",    ru: "Снэки",    en: "Snacks" },
+  { id: "pizza",    kz: "Пицца",      ru: "Пицца",    en: "Pizza" },
+  { id: "drinks",   kz: "Сусындар",   ru: "Напитки",  en: "Drinks" },
 ];
 
 // Сусын көлемдері
 const VOL = {
-  s025: { id: "025", kz: "0,25 л", ru: "0,25 л" },
-  s05:  { id: "05",  kz: "0,5 л",  ru: "0,5 л" },
-  s1:   { id: "1",   kz: "1 л",    ru: "1 л" },
+  s025: { id: "025", kz: "0,25 л", ru: "0,25 л", en: "0.25 L" },
+  s05:  { id: "05",  kz: "0,5 л",  ru: "0,5 л",  en: "0.5 L" },
+  s1:   { id: "1",   kz: "1 л",    ru: "1 л",    en: "1 L" },
 };
 const soda = [{ ...VOL.s05, price: 600 }, { ...VOL.s1, price: 700 }];
 
@@ -110,22 +111,22 @@ const MENU = [
     },
   },
   {
-    id: "bastyrma-chicken", cat: "special", img: "bastyrma", price: 2090,
+    id: "bastyrma-chicken", cat: "new", isNew: true, img: "bastyrma", price: 2090,
     name: { kz: "Бастырма тауық етімен", ru: "Бастырма с курицей" },
     desc: null,
   },
   {
-    id: "bastyrma-beef", cat: "special", img: "bastyrma", price: 2190,
+    id: "bastyrma-beef", cat: "new", isNew: true, img: "bastyrma", price: 2190,
     name: { kz: "Бастырма сиыр етімен", ru: "Бастырма с говядиной" },
     desc: null,
   },
   {
-    id: "green-doner", cat: "special", img: "green-doner", price: 1890,
+    id: "green-doner", cat: "new", isNew: true, img: "green-doner", price: 1890,
     name: { kz: "Green Doner", ru: "Green Doner" },
     desc: null,
   },
   {
-    id: "twister", cat: "special", img: "twister", price: 1690,
+    id: "twister", cat: "new", isNew: true, img: "twister", price: 1690,
     name: { kz: "Твистер", ru: "Твистер" },
     desc: null,
   },
@@ -165,10 +166,10 @@ const MENU = [
       ru: "Золотистая хрустящая корочка, а внутри — нежная и сочная курица.",
     },
     variants: [
-      { id: "6",  kz: "6 дана",  ru: "6 шт",  price: 1990 },
-      { id: "9",  kz: "9 дана",  ru: "9 шт",  price: 2890 },
-      { id: "15", kz: "15 дана", ru: "15 шт", price: 4690 },
-      { id: "21", kz: "21 дана", ru: "21 шт", price: 6490 },
+      { id: "6",  kz: "6 дана",  ru: "6 шт", en: "6 pcs",  price: 1990 },
+      { id: "9",  kz: "9 дана",  ru: "9 шт", en: "9 pcs",  price: 2890 },
+      { id: "15", kz: "15 дана", ru: "15 шт", en: "15 pcs", price: 4690 },
+      { id: "21", kz: "21 дана", ru: "21 шт", en: "21 pcs", price: 6490 },
     ],
   },
 
@@ -282,35 +283,152 @@ const MENU = [
 // Жұмыс уақыты: open/close — минутпен (Ақтау уақыты). allDay — тәулік бойы.
 const BRANCHES = [
   {
-    id: "dukat", pickup: true,
-    name: { kz: "ЖК Дукат", ru: "ЖК Дукат" },
-    addr: { kz: "17 шағын аудан, 1", ru: "17 мкр, 1" },
-    hours: { kz: "Тәулік бойы", ru: "Круглосуточно" },
-    allDay: true,
+    id: "dukat", pickup: true, allDay: true,
+    name: { kz: "ЖК Дукат", ru: "ЖК Дукат", en: "Dukat residence" },
+    addr: { kz: "17 шағын аудан, 1", ru: "17 мкр, 1", en: "17 microdistrict, 1" },
+    hours: { kz: "Тәулік бойы, демалыссыз", ru: "Круглосуточно, без выходных", en: "Open 24/7" },
     link: "https://2gis.kz/aktau/geo/70000001113214564",
   },
   {
+    id: "27", pickup: true, allDay: true,
+    name: { kz: "27 шағын аудан", ru: "27 мкр", en: "27 microdistrict" },
+    addr: { kz: "27 шағын аудан, 10/1", ru: "27 мкр, 10/1", en: "27 microdistrict, 10/1" },
+    hours: { kz: "Тәулік бойы, демалыссыз", ru: "Круглосуточно, без выходных", en: "Open 24/7" },
+    link: "https://2gis.kz/aktau/geo/70000001094991910",
+  },
+  {
     id: "astana",
-    name: { kz: "ТРЦ Астана", ru: "ТРЦ Астана" },
-    addr: { kz: "14 шағын аудан, 100/5", ru: "14 мкр, 100/5" },
-    hours: { kz: "10:00 – 03:00", ru: "10:00 – 03:00" },
+    name: { kz: "ТРЦ Астана", ru: "ТРЦ Астана", en: "Astana mall" },
+    addr: { kz: "14 шағын аудан, 100/5", ru: "14 мкр, 100/5", en: "14 microdistrict, 100/5" },
+    hours: { kz: "10:00 – 03:00", ru: "10:00 – 03:00", en: "10:00 – 03:00" },
     open: 10 * 60, close: 3 * 60,
     link: "https://2gis.kz/aktau/geo/70000001094632008",
   },
   {
-    id: "28a", pickup: true,
-    name: { kz: "28А шағын аудан", ru: "28А мкр" },
-    addr: { kz: "28А шағын аудан, 9/4", ru: "28А мкр, 9/4" },
-    hours: { kz: "07:00 – 06:00, үзіліс 06:00–07:00", ru: "07:00 – 06:00, перерыв 06:00–07:00" },
+    id: "28a",
+    name: { kz: "28А шағын аудан", ru: "28А мкр", en: "28A microdistrict" },
+    addr: { kz: "28А шағын аудан, 9/4", ru: "28А мкр, 9/4", en: "28A microdistrict, 9/4" },
+    hours: { kz: "07:00 – 06:00, үзіліс 06:00–07:00", ru: "07:00 – 06:00, перерыв 06:00–07:00", en: "07:00 – 06:00, break 06:00–07:00" },
     open: 7 * 60, close: 6 * 60,
     link: "https://2gis.kz/aktau/geo/70000001047393946",
   },
   {
     id: "aktau",
-    name: { kz: "ТРК Актау", ru: "ТРК Актау" },
-    addr: { kz: "16 шағын аудан, 16/4, 1-қабат", ru: "16 мкр, 16/4, 1 этаж" },
-    hours: { kz: "10:00 – 23:00", ru: "10:00 – 23:00" },
+    name: { kz: "ТРК Актау", ru: "ТРК Актау", en: "Aktau mall" },
+    addr: { kz: "16 шағын аудан, 16/4, 1-қабат", ru: "16 мкр, 16/4, 1 этаж", en: "16 microdistrict, 16/4, 1st floor" },
+    hours: { kz: "10:00 – 23:00", ru: "10:00 – 23:00", en: "10:00 – 23:00" },
     open: 10 * 60, close: 23 * 60,
     link: "https://2gis.kz/aktau/geo/70000001094632093/51.152436,43.666921",
   },
+];
+
+// ---- Ағылшынша атаулар мен сипаттамалар (id бойынша) ----
+const EN_MENU = {
+  "doner-chicken": ["Chicken doner", "Juicy chicken, crispy fries, fresh vegetables, signature sauce and soft lavash."],
+  "doner-beef": ["Beef doner", "Juicy beef, crispy fries, fresh vegetables, signature sauce and soft lavash."],
+  "doner-mix": ["Mixed doner", "Chicken and beef together, crispy fries, fresh vegetables, signature sauce and soft lavash."],
+  "shawarma-chicken": ["Chicken shawarma", "Juicy chicken, fries, fresh vegetables and signature sauce in tandoor bread."],
+  "shawarma-beef": ["Beef shawarma", "Juicy beef, fries, fresh vegetables and signature sauce in tandoor bread."],
+  "shawarma-mix": ["Mixed shawarma", "Chicken and beef, fries, fresh vegetables and signature sauce in tandoor bread."],
+  "baguette-chicken": ["Chicken baguette", "Crispy baguette, juicy chicken, fries, fresh vegetables and signature sauce."],
+  "baguette-beef": ["Beef baguette", "Crispy baguette, juicy beef, fries, fresh vegetables and signature sauce."],
+  "baguette-mix": ["Mixed baguette", "Crispy baguette, chicken and beef, fries, fresh vegetables and signature sauce."],
+  "nanet": ["Nan Et with beef", "Juicy beef, BBQ sauce, fresh vegetables and signature sauce in crispy bread."],
+  "bastyrma-chicken": ["Bastyrma with chicken"],
+  "bastyrma-beef": ["Bastyrma with beef"],
+  "green-doner": ["Green Doner"],
+  "twister": ["Twister"],
+  "hotdog-classic": ["Classic hot dog", "Soft bun, sausage, fresh vegetables, signature sauce, fries and crispy fried onions."],
+  "hotdog-big": ["BIG hot dog", "A big hot dog: two sausages, fresh vegetables, signature sauce, fries and crispy fried onions."],
+  "hotdog-lavash": ["Lavash hot dog", "4 sausages, fries, fresh vegetables and signature sauce wrapped in soft lavash."],
+  "chicken": ["Crispy chicken", "Golden crispy crust, tender and juicy chicken inside."],
+  "fries": ["French fries", "Golden, crispy classic fries."],
+  "wedges": ["Potato wedges", "Golden wedges: crispy outside, soft inside."],
+  "nuggets": ["Nuggets", "Tender chicken in a golden crispy coating."],
+  "pizza-beef": ["Beef pizza", "A hearty pizza with juicy beef, mozzarella and signature sauce."],
+  "pizza-chicken": ["Chicken pizza", "Pizza with tender chicken, mozzarella and signature sauce."],
+  "pizza-pepperoni": ["Pepperoni", "Classic pizza with pepperoni, melted mozzarella and signature sauce."],
+  "pizza-margherita": ["Margherita", "Classic pizza with mozzarella, fresh tomatoes and signature sauce."],
+  "pizza-4seasons": ["Four seasons", "Four flavours in one pizza: chicken, beef, pepperoni, tomatoes, mozzarella and signature sauce."],
+  "pizza-sweet-chili": ["Sweet Chili chicken", "Pizza with chicken, mozzarella and sweet chili sauce."],
+  "cola": ["Coca-Cola"],
+  "fanta": ["Fanta"],
+  "sprite": ["Sprite"],
+  "fuse": ["Fuse tea"],
+  "piko": ["Piko Pulpy"],
+  "ayran": ["Ayran"],
+  "bonaqua": ["Bon Aqua water"],
+};
+const EN_FLAVORS = {
+  mango: "Mango & chamomile", pineapple: "Mango & pineapple", peach: "Peach",
+  orange: "Orange", grape: "Grape & aloe",
+};
+MENU.forEach((item) => {
+  const en = EN_MENU[item.id];
+  if (en) {
+    item.name.en = en[0];
+    if (item.desc && en[1]) item.desc.en = en[1];
+  }
+  (item.flavors || []).forEach((f) => { if (EN_FLAVORS[f.id]) f.en = EN_FLAVORS[f.id]; });
+});
+
+// ---- Жеткізу ----
+// Тағам сомасы FREE_DELIVERY_FROM-нан асса, жеткізу тегін (жеткізу бағасы есептелмейді).
+const FREE_DELIVERY_FROM = 6000;
+
+// price: null — бағасын менеджер нақтылайды (range болса, соны көрсетеміз)
+const mcr = (n, subs, price) => ({
+  id: `m${n}`,
+  kz: `${n} мкр${subs ? ` (${subs})` : ""}`,
+  ru: `${n} мкр${subs ? ` (${subs})` : ""}`,
+  en: `Microdistrict ${n}${subs ? ` (${subs})` : ""}`,
+  price,
+});
+
+const DELIVERY_ZONES = [
+  mcr(1, "1а, 1б, 1в", 1000),
+  mcr(2, "", 1000),
+  mcr(3, "3а, 3б", 900),
+  mcr(4, "", 900),
+  mcr(5, "5а", 900),
+  mcr(6, "", 800),
+  mcr(7, "7а", 800),
+  mcr(8, "", 800),
+  mcr(9, "", 800),
+  mcr(10, "", 800),
+  mcr(11, "11а", 700),
+  mcr(12, "12а", 700),
+  mcr(13, "", 700),
+  mcr(14, "", 700),
+  mcr(15, "", 700),
+  mcr(16, "", 700),
+  mcr(17, "", 700),
+  mcr(18, "18а, 18б", 700),
+  mcr(19, "19а", 700),
+  mcr(20, "20а", 800),
+  mcr(21, "", 800),
+  mcr(22, "", 800),
+  mcr(23, "", 800),
+  mcr(24, "", 800),
+  mcr(25, "", 900),
+  mcr(26, "", 700),
+  mcr(27, "", 700),
+  mcr(28, "28а", 700),
+  mcr(29, "29а", 800),
+  mcr(30, "", 800),
+  mcr(31, "31а, 31б", 800),
+  mcr(32, "32а, 32б, 32в", 800),
+  mcr(33, "", 800),
+  mcr(34, "34а", 800),
+  mcr(35, "", 900),
+  mcr(36, "", 900),
+  mcr(37, "", 900),
+  { id: "samal",    kz: "Самал",           ru: "Самал",           en: "Samal",            price: 700 },
+  { id: "shygys1",  kz: "Шығыс, 1 мкр",    ru: "Шыгыс, 1 мкр",    en: "Shygys, mcr 1",    price: 900 },
+  { id: "shygys2",  kz: "Шығыс, 2 мкр",    ru: "Шыгыс, 2 мкр",    en: "Shygys, mcr 2",    price: 900 },
+  { id: "shygys3",  kz: "Шығыс, 3 мкр",    ru: "Шыгыс, 3 мкр",    en: "Shygys, mcr 3",    price: 900 },
+  { id: "tolkyn1",  kz: "Толқын 1",        ru: "Толкын 1",        en: "Tolkyn 1",         price: null, range: "800–900" },
+  { id: "tolkyn2",  kz: "Толқын 2",        ru: "Толкын 2",        en: "Tolkyn 2",         price: null },
+  { id: "tolkyn3",  kz: "Толқын 3",        ru: "Толкын 3",        en: "Tolkyn 3",         price: null },
+  { id: "other",    kz: "Тізімде жоқ мекенжай", ru: "Другой адрес", en: "Other address", price: null, other: true },
 ];

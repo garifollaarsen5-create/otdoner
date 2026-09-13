@@ -681,3 +681,184 @@ input[type="date"].input, input[type="time"].input { color-scheme: dark; }
   opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease;
 }
 #toast.is-on { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- 24/7 филиалдар (hero) ---------- */
+.clock__info { display: grid; gap: 6px; }
+.clock__places { display: grid; gap: 4px; }
+.clock__place {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--ash); font-size: 14.5px; font-weight: 600; text-decoration: none;
+}
+.clock__place svg { width: 16px; height: 16px; color: var(--ember); flex: none; }
+.clock__place:hover span { text-decoration: underline; }
+@media (min-width: 900px) {
+  .clock__info { justify-items: end; text-align: right; }
+}
+
+/* ---------- Акция баннерлері ---------- */
+.promos { display: grid; gap: 14px; margin-bottom: 18px; }
+@media (min-width: 900px) {
+  .promos { grid-template-columns: 1.35fr 1fr; grid-template-rows: 1fr 1fr; gap: 18px; margin-bottom: 22px; }
+  .promo--new { grid-row: span 2; }
+}
+.promo {
+  position: relative; overflow: hidden; isolation: isolate;
+  display: flex; align-items: flex-end; min-height: 200px;
+  padding: 22px; border-radius: var(--r-card);
+  background: var(--coal-2); border: 1px solid var(--line);
+  color: var(--ash); text-decoration: none;
+  transition: border-color .2s ease, transform .2s ease;
+}
+.promo:hover { border-color: var(--line-2); }
+.promo:active { transform: scale(.99); }
+.promo::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: radial-gradient(60% 70% at 85% 80%, rgba(255, 120, 40, .32), transparent 70%);
+}
+.promo--free { background: linear-gradient(135deg, #3a130a, var(--coal-2) 70%); }
+.promo--free::before { background: radial-gradient(60% 70% at 88% 70%, rgba(242, 69, 30, .45), transparent 72%); }
+.promo__text { position: relative; z-index: 2; max-width: 62%; }
+.promo--new .promo__text { max-width: 56%; }
+.promo__tag {
+  display: inline-block; margin-bottom: 10px;
+  background: var(--ember); color: #fff; border-radius: 999px;
+  padding: 5px 12px; font-size: 12.5px; font-weight: 800;
+}
+.promo__title { font-family: var(--f-display); font-weight: 800; font-size: clamp(19px, 2.4vw, 26px); line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
+.promo--new .promo__title { font-size: clamp(24px, 3.4vw, 40px); }
+.promo__desc { color: #d6c9be; font-size: 14.5px; margin: 8px 0 0; line-height: 1.4; }
+.promo__cta { display: inline-block; margin-top: 14px; color: var(--glow); font-weight: 800; font-size: 14.5px; }
+.promo__imgs { position: absolute; right: -4%; bottom: 0; top: 0; width: 52%; z-index: 1; pointer-events: none; }
+.promo__imgs img {
+  position: absolute; width: 90%; height: auto; right: 0; bottom: 6%;
+  filter: drop-shadow(0 16px 18px rgba(0, 0, 0, .55));
+}
+.promo__imgs img:nth-child(2) { width: 62%; right: 30%; bottom: 30%; z-index: -1; }
+.promo__imgs--trio { width: 58%; }
+.promo__imgs--trio img { width: 72%; }
+.promo__imgs--trio img:nth-child(1) { right: 22%; bottom: 44%; transform: rotate(-8deg); }
+.promo__imgs--trio img:nth-child(2) { width: 64%; right: -2%; bottom: 18%; transform: rotate(10deg); z-index: 1; }
+.promo__imgs--trio img:nth-child(3) { width: 58%; right: 34%; bottom: 2%; transform: rotate(-4deg); }
+@media (min-width: 900px) {
+  .promo--new { min-height: 420px; padding: 30px; }
+  .promo--new .promo__imgs { width: 60%; }
+}
+
+/* ---------- Мәзірдегі «Жаңа» белгісі ---------- */
+.card__new {
+  position: absolute; top: 14px; left: 14px; z-index: 1;
+  background: var(--ember); color: #fff; border-radius: 999px;
+  padding: 7px 14px; font-size: 12.5px; font-weight: 800;
+  box-shadow: 0 8px 20px -8px rgba(242, 69, 30, .9);
+}
+
+/* ---------- Тегін жеткізу шкаласы ---------- */
+.freebar {
+  margin: 10px 0 6px; padding: 14px 16px; border-radius: 16px;
+  background: var(--coal-3); border: 1px solid var(--line);
+}
+.freebar__text { display: flex; align-items: center; gap: 10px; font-size: 14.5px; font-weight: 600; }
+.freebar__text svg { width: 22px; height: 22px; color: var(--glow); flex: none; }
+.freebar__text b { color: var(--ash); }
+.freebar__track { height: 8px; border-radius: 999px; background: var(--coal); margin-top: 10px; overflow: hidden; }
+.freebar__track span {
+  display: block; height: 100%; border-radius: inherit;
+  background: linear-gradient(90deg, var(--ember-deep), var(--ember), var(--glow));
+  transition: width .5s cubic-bezier(.2, .8, .2, 1);
+}
+.freebar__note { color: var(--smoke); font-size: 12.5px; margin: 8px 0 0; }
+.freebar.is-done { background: rgba(62, 207, 122, .1); border-color: rgba(62, 207, 122, .35); }
+.freebar.is-done .freebar__text svg { color: var(--ok); }
+.freebar.is-done .freebar__text b { color: var(--ok); }
+.freebar.is-done .freebar__track span { background: var(--ok); }
+
+/* ---------- Қоса алыңыз (upsell) ---------- */
+.upsell { margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--line); }
+.upsell__title { font-weight: 700; font-size: 14.5px; margin: 0 0 10px; }
+.upsell__row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.upsell__item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;
+  padding: 8px 6px 10px; border-radius: 14px; border: 1px solid var(--line);
+  background: var(--coal-3); color: var(--ash); min-width: 0;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.upsell__item:hover { border-color: var(--glow); }
+.upsell__item:active { transform: scale(.96); }
+.upsell__img { width: 100%; aspect-ratio: 4 / 3; }
+.upsell__img img { width: 100%; height: 100%; object-fit: contain; }
+.upsell__name { font-size: 12px; font-weight: 600; line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.upsell__price { display: inline-flex; align-items: center; gap: 2px; font-size: 12.5px; font-weight: 800; color: var(--glow); white-space: nowrap; }
+.upsell__price svg { width: 13px; height: 13px; }
+
+/* ---------- Сомалар ---------- */
+.sum { display: grid; gap: 4px; margin-bottom: 8px; font-size: 14.5px; color: var(--smoke); }
+.sum__row { display: flex; justify-content: space-between; gap: 12px; }
+.sum__row span:last-child { color: var(--ash); font-weight: 600; text-align: right; }
+.sum__row .is-free { color: var(--ok); font-weight: 800; }
+
+.seg--3 { grid-template-columns: repeat(3, 1fr); }
+.seg--3 .seg__btn { font-size: 14px; gap: 7px; padding: 0 4px; }
+.bank .seg__btn[data-pay="kaspi"] .bank__dot { background: var(--kaspi); }
+.bank .seg__btn[data-pay="halyk"] .bank__dot { background: var(--halyk); }
+.bank .seg__btn[data-pay="cash"] .bank__dot { background: var(--glow); }
+.bank .seg__btn[data-pay="kaspi"][aria-pressed="true"] { background: var(--kaspi); color: #fff; }
+.bank .seg__btn[data-pay="halyk"][aria-pressed="true"] { background: var(--halyk); color: #fff; }
+.bank .seg__btn[data-pay="cash"][aria-pressed="true"] { background: var(--glow); color: var(--coal); }
+.bank .seg__btn[data-pay="cash"][aria-pressed="true"] .bank__dot { background: var(--coal); }
+
+/* ---------- «Жеткізу тегін» — 3D қорап ---------- */
+.party {
+  position: fixed; inset: 0; z-index: 90;
+  display: grid; place-content: center; justify-items: center; text-align: center;
+  padding: 24px; cursor: pointer;
+  background: radial-gradient(circle at 50% 45%, rgba(26, 20, 17, .72), rgba(8, 5, 4, .92) 70%);
+  animation: fade .25s ease both;
+  transition: opacity .35s ease;
+}
+.party.is-out { opacity: 0; }
+.party__stage { position: relative; width: 150px; height: 150px; perspective: 700px; margin-bottom: 26px; }
+.cube {
+  position: absolute; inset: 15px; transform-style: preserve-3d;
+  animation: cube-in 1.1s cubic-bezier(.2, .9, .3, 1.25) both, cube-spin 2.6s linear 1.1s infinite;
+}
+.cube__face {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  border-radius: 14px; border: 2px solid rgba(255, 255, 255, .25);
+  background: linear-gradient(145deg, var(--ember-hi), var(--ember) 55%, var(--ember-deep));
+  color: #fff; box-shadow: inset 0 0 30px rgba(0, 0, 0, .25);
+}
+.cube__face b { font-family: var(--f-display); font-weight: 900; font-size: 28px; letter-spacing: -0.02em; }
+.cube__face svg { width: 52px; height: 52px; }
+.cube__face--front  { transform: translateZ(60px); }
+.cube__face--back   { transform: rotateY(180deg) translateZ(60px); }
+.cube__face--right  { transform: rotateY(90deg) translateZ(60px); }
+.cube__face--left   { transform: rotateY(-90deg) translateZ(60px); }
+.cube__face--top    { transform: rotateX(90deg) translateZ(60px); background: linear-gradient(145deg, var(--glow), var(--ember)); }
+.cube__face--bottom { transform: rotateX(-90deg) translateZ(60px); background: var(--ember-deep); }
+/* opacity мұнда жоқ: Chrome opacity анимацияланған элементте 3D-ні жалпақ етеді */
+@keyframes cube-in {
+  0% { transform: translateY(-220px) rotateX(-220deg) rotateY(-300deg) scale(.15); }
+  100% { transform: rotateX(-20deg) rotateY(32deg) scale(1); }
+}
+@keyframes cube-spin {
+  from { transform: rotateX(-20deg) rotateY(32deg); }
+  to { transform: rotateX(-20deg) rotateY(392deg); }
+}
+.party__sparks { position: absolute; left: 50%; top: 50%; transform-style: preserve-3d; }
+.party__sparks i {
+  position: absolute; width: 8px; height: 8px; margin: -4px; border-radius: 50%;
+  background: var(--glow); box-shadow: 0 0 12px 3px rgba(255, 140, 50, .85);
+  opacity: 0; animation: burst var(--d, .9s) cubic-bezier(.1, .7, .3, 1) .75s forwards;
+}
+.party__sparks i:nth-child(3n) { background: #fff; }
+.party__sparks i:nth-child(4n) { background: var(--ember); width: 6px; height: 6px; }
+@keyframes burst {
+  0% { transform: translate3d(0, 0, 0) scale(1.4); opacity: 1; }
+  100% { transform: translate3d(var(--dx), var(--dy), var(--dz)) scale(.2); opacity: 0; }
+}
+.party__title {
+  font-family: var(--f-display); font-weight: 900; font-size: clamp(30px, 8vw, 52px);
+  line-height: 1; margin: 0; color: var(--ash); letter-spacing: -0.02em;
+  animation: up .6s cubic-bezier(.2, .8, .2, 1) .5s both;
+}
+.party__sub { color: #d6c9be; max-width: 30ch; margin: 12px auto 0; animation: up .6s cubic-bezier(.2, .8, .2, 1) .65s both; }

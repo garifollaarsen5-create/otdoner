@@ -37,6 +37,7 @@
       <div class="lang" role="group" data-i18n-aria="lang.label">
         <button type="button" class="lang__btn" data-lang="kz" aria-pressed="true">KZ</button>
         <button type="button" class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
+        <button type="button" class="lang__btn" data-lang="en" aria-pressed="false">EN</button>
       </div>
       <button type="button" class="cart-icon" data-open-cart data-icon="bag" data-i18n-aria="cart.open">
         <span class="cart-icon__count" hidden>0</span>
@@ -66,7 +67,10 @@
       </div>
       <div class="clock">
         <span class="clock__num">24<b>·</b>7<b>·</b>365</span>
-        <span class="clock__cap" data-i18n="hero.clock">ЖК Дукат филиалы тәулік бойы, жыл бойы ашық</span>
+        <div class="clock__info">
+          <span class="clock__cap" data-i18n="hero.clock">Тәулік бойы, демалыссыз ашық:</span>
+          <div class="clock__places" id="clock-places"></div>
+        </div>
       </div>
     </div>
     <div class="hero__flames" aria-hidden="true"></div>
@@ -86,6 +90,43 @@
       <div class="section__head">
         <h2 class="h2" id="why-title" data-i18n="why.title">Неге otdoner?</h2>
       </div>
+      <div class="promos">
+        <a class="promo promo--new" href="#menu" data-promo-cat="new">
+          <div class="promo__text">
+            <span class="promo__tag" data-i18n="menu.new">Жаңа</span>
+            <h3 class="promo__title" data-i18n="promo.new.t">Жаңалықтар</h3>
+            <p class="promo__desc" data-i18n="promo.new.d"></p>
+            <span class="promo__cta" data-i18n="promo.new.cta">Жаңалықтарды көру</span>
+          </div>
+          <div class="promo__imgs promo__imgs--trio" aria-hidden="true">
+            <img src="img/menu/twister-s.webp" alt="" loading="lazy">
+            <img src="img/menu/green-doner-s.webp" alt="" loading="lazy">
+            <img src="img/menu/bastyrma-s.webp" alt="" loading="lazy">
+          </div>
+        </a>
+        <a class="promo promo--free" href="#menu" data-promo-cat="pizza">
+          <div class="promo__text">
+            <h3 class="promo__title" data-i18n="promo.free.t">6 000 ₸-ден бастап жеткізу тегін</h3>
+            <p class="promo__desc" data-i18n="promo.free.d"></p>
+            <span class="promo__cta" data-i18n="promo.free.cta">Мәзірге өту</span>
+          </div>
+          <div class="promo__imgs" aria-hidden="true">
+            <img src="img/menu/pizza-4seasons-s.webp" alt="" loading="lazy">
+            <img src="img/menu/chicken-s.webp" alt="" loading="lazy">
+          </div>
+        </a>
+        <a class="promo promo--night" href="#contacts">
+          <div class="promo__text">
+            <h3 class="promo__title" data-i18n="promo.night.t">Түнде де ашықпыз</h3>
+            <p class="promo__desc" data-i18n="promo.night.d"></p>
+            <span class="promo__cta" data-i18n="promo.night.cta">Мекенжайлар</span>
+          </div>
+          <div class="promo__imgs" aria-hidden="true">
+            <img src="img/menu/doner-beef-s.webp" alt="" loading="lazy">
+          </div>
+        </a>
+      </div>
+
       <div class="why">
         <article class="why__item">
           <div class="why__icon" data-why="clock"></div>
@@ -207,7 +248,7 @@
 <!-- Қалқымалы корзина -->
 <button type="button" class="fab" id="fab" hidden>
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
-  <span class="fab__label">Корзина</span>
+  <span class="fab__label" data-i18n="cart.title">Корзина</span>
   <span class="fab__count" id="fab-count">0</span>
   <span class="fab__total" id="fab-total">0 ₸</span>
 </button>

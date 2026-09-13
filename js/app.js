@@ -10,7 +10,7 @@ const state = {
   flavor: {},             // fuse → "peach" сияқты таңдалған дәм
   cart: readCart(),       // { "doner-beef": 2, "chicken:9": 1, "fuse:1:peach": 1 }
   view: "cart",           // cart | form | done
-  order: { type: "pickup", bank: "kaspi" },
+  order: { type: "pickup", pay: "kaspi" },
   lastWaUrl: "",
 };
 
@@ -44,6 +44,7 @@ function saveCart() {
   }
   try { localStorage.setItem(CART_KEY, JSON.stringify(state.cart)); } catch (e) {}
   renderFab();
+  checkFree();
   updateCartBadge(state.cart);
 }
 
@@ -127,7 +128,7 @@ function renderMenu() {
         : `<button type="button" class="add" data-add="${key}" aria-label="${t("menu.addAria")}: ${escapeHtml(sel.name)}">${icon("plus")}<span>${t("menu.add")}</span></button>`;
     return `<article class="card${stopped ? " card--stopped" : ""}" data-item="${item.id}">
       ${mediaHtml(item, sel.img, sel.name)}
-      ${stopped ? `<span class="card__stop">${t("menu.stopped")}</span>` : ""}
+      ${stopped ? `<span class="card__stop">${t("menu.stopped")}</span>` : item.isNew ? `<span class="card__new">${t("menu.new")}</span>` : ""}
       <div class="card__body">
         <h3 class="card__name">${escapeHtml(tr(item.name))}</h3>
         ${item.desc ? `<p class="card__desc">${escapeHtml(tr(item.desc))}</p>` : ""}
@@ -235,6 +236,115 @@ function closeSheet() {
   if (lastFocus) lastFocus.focus();
 }
 
+// ---------- Жеткізу бағасы ----------
+function zoneById(id) {
+  return DELIVERY_ZONES.find((z) => z.id === id) || null;
+}
+
+function freeLeft() {
+  return Math.max(0, FREE_DELIVERY_FROM - cartTotal());
+}
+
+// Жеткізу: тегін / белгілі баға / менеджер нақтылайды / аудан таңдалмаған
+function deliveryInfo() {
+  const o = state.order;
+  if (o.type !== "delivery") return { fee: 0, known: true, pickup: true };
+  if (cartTotal() >= FREE_DELIVERY_FROM) return { fee: 0, known: true, free: true };
+  const z = zoneById(o.zone);
+  if (!z) return { fee: 0, known: false, choose: true };
+  if (z.price == null) return { fee: 0, known: false, zone: z };
+  return { fee: z.price, known: true, zone: z };
+}
+
+function deliveryText(d) {
+  if (d.free) return t("cart.deliveryFree");
+  if (d.known) return formatPrice(d.fee);
+  if (d.choose) return t("cart.deliveryChoose");
+  return d.zone && d.zone.range ? `${d.zone.range} ₸, ${t("cart.deliveryTbd")}` : t("cart.deliveryTbd");
+}
+
+function zoneLabel(z) {
+  const price = z.price != null ? formatPrice(z.price) : z.range ? `${z.range} ₸` : t("order.zoneTbd");
+  return `${tr(z)} — ${price}`;
+}
+
+// ---------- Тегін жеткізу шкаласы ----------
+function freeBarHtml() {
+  const left = freeLeft();
+  const pct = Math.min(100, Math.round((cartTotal() / FREE_DELIVERY_FROM) * 100));
+  const text = left
+    ? `${icon("scooter")}<span>${t("free.left").replace("{x}", `<b>${formatPrice(left)}</b>`)}</span>`
+    : `${icon("check")}<span><b>${t("free.done")}</b></span>`;
+  return `<div class="freebar${left ? "" : " is-done"}">
+    <div class="freebar__text">${text}</div>
+    <div class="freebar__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><span style="width:${pct}%"></span></div>
+    <p class="freebar__note">${t("free.note")}</p>
+  </div>`;
+}
+
+// ---------- Қосымша сату: корзинада «қоса алыңыз» ----------
+const UPSELL_IDS = ["cola", "fries", "nuggets", "ayran", "wedges", "sprite", "fanta", "fuse"];
+
+function upsellHtml() {
+  const inCart = new Set(Object.keys(state.cart).map((k) => k.split(":")[0]));
+  const items = UPSELL_IDS
+    .map((id) => MENU.find((m) => m.id === id))
+    .filter((m) => m && !inCart.has(m.id) && !StopList.has(m.id))
+    .slice(0, 4);
+  if (!items.length) return "";
+  const left = freeLeft();
+  const title = left ? t("upsell.titleFree").replace("{x}", formatPrice(left)) : t("upsell.title");
+  return `<div class="upsell">
+    <p class="upsell__title">${title}</p>
+    <div class="upsell__row">
+      ${items.map((m) => {
+        const key = keyFor(m);
+        const sel = findItem(key);
+        return `<button type="button" class="upsell__item" data-upsell="${key}" aria-label="${t("menu.addAria")}: ${escapeHtml(sel.name)}">
+          <span class="upsell__img">${sel.img ? `<img src="img/menu/${sel.img}-s.webp" alt="" loading="lazy">` : ""}</span>
+          <span class="upsell__name">${escapeHtml(sel.name)}</span>
+          <span class="upsell__price">${icon("plus")}${formatPrice(sel.price)}</span>
+        </button>`;
+      }).join("")}
+    </div>
+  </div>`;
+}
+
+// ---------- Шторка төменгі бөлігі: сомалар ----------
+function totalsHtml() {
+  const sub = cartTotal();
+  const o = state.order;
+  if (state.view !== "form") {
+    return `<div class="total"><span>${t("cart.subtotal")}</span><strong>${formatPrice(sub)}</strong></div>`;
+  }
+  if (o.type !== "delivery") {
+    return `<div class="total"><span>${t("cart.total")}</span><strong>${formatPrice(sub)}</strong></div>`;
+  }
+  const d = deliveryInfo();
+  return `<div class="sum">
+      <div class="sum__row"><span>${t("cart.subtotal")}</span><span>${formatPrice(sub)}</span></div>
+      <div class="sum__row"><span>${t("cart.delivery")}</span><span class="${d.free ? "is-free" : ""}">${deliveryText(d)}</span></div>
+    </div>
+    <div class="total"><span>${t("cart.total")}</span><strong>${formatPrice(sub + d.fee)}${d.known ? "" : " +"}</strong></div>`;
+}
+
+function renderFoot() {
+  const foot = $("#sheet-foot");
+  if (state.view === "cart") {
+    foot.innerHTML = `${totalsHtml()}<button type="button" class="btn btn--fire btn--block" data-go="form">${t("cart.checkout")}</button>`;
+  } else if (state.view === "form") {
+    foot.innerHTML = `${totalsHtml()}
+      <button type="submit" form="order-form" class="btn btn--wa btn--block">${icon("wa")}<span>${t("order.send")}</span></button>
+      <p class="note">${t("order.note")}</p>`;
+  }
+}
+
+function payLabels(pay) {
+  return pay === "cash"
+    ? { label: t("order.phoneCash"), hint: t("order.phoneHintCash") }
+    : { label: t("order.phone"), hint: t("order.phoneHint") };
+}
+
 function renderSheet() {
   const lines = cartLines();
   const head = $("#sheet-head");
@@ -271,10 +381,9 @@ function renderSheet() {
   }
 
   foot.hidden = false;
-  const total = `<div class="total"><span>${t("cart.total")}</span><strong>${formatPrice(cartTotal())}</strong></div>`;
 
   if (state.view === "cart") {
-    body.innerHTML = lines.map((l) => `
+    body.innerHTML = freeBarHtml() + lines.map((l) => `
       <div class="line">
         <div class="line__img">${l.img ? `<img src="img/menu/${l.img}-s.webp" alt="" loading="lazy">` : ""}</div>
         <div>
@@ -286,15 +395,18 @@ function renderSheet() {
           </div>
           <button type="button" class="line__del" data-del="${l.key}">${t("cart.remove")}</button>
         </div>
-      </div>`).join("");
-    foot.innerHTML = `${total}<button type="button" class="btn btn--fire btn--block" data-go="form">${t("cart.checkout")}</button>`;
+      </div>`).join("") + upsellHtml();
+    renderFoot();
     return;
   }
 
   // ---- Тапсырыс формасы ----
   const o = state.order;
   const branchOpts = pickupBranches().map((b) =>
-    `<option value="${b.id}" ${o.branch === b.id ? "selected" : ""}>${escapeHtml(tr(b.name))} — ${escapeHtml(tr(b.addr))}</option>`).join("");
+    `<option value="${b.id}" ${o.branch === b.id ? "selected" : ""}>${escapeHtml(branchText(b))}</option>`).join("");
+  const zoneOpts = DELIVERY_ZONES.map((z) =>
+    `<option value="${z.id}" ${o.zone === z.id ? "selected" : ""}>${escapeHtml(zoneLabel(z))}</option>`).join("");
+  const phone = payLabels(o.pay);
   body.innerHTML = `<form class="form" id="order-form" novalidate>
     <div class="field">
       <span class="field__label" id="lbl-type">${t("order.type")}</span>
@@ -311,6 +423,14 @@ function renderSheet() {
       </select>
       <span class="field__err">${t("order.err.branch")}</span>
     </div>` : `
+    ${freeBarHtml()}
+    <div class="field" data-field="zone">
+      <label class="field__label" for="f-zone">${t("order.zone")}</label>
+      <select class="input" id="f-zone" name="zone" required>
+        <option value="" ${o.zone ? "" : "selected"} disabled>${t("order.zonePh")}</option>${zoneOpts}
+      </select>
+      <span class="field__err">${t("order.err.zone")}</span>
+    </div>
     <div class="field" data-field="address">
       <label class="field__label" for="f-address">${t("order.address")}</label>
       <input class="input" id="f-address" name="address" autocomplete="street-address" placeholder="${t("order.addressPh")}" value="${escapeHtml(o.address || "")}" required>
@@ -321,62 +441,35 @@ function renderSheet() {
       <input class="input" id="f-name" name="name" autocomplete="given-name" placeholder="${t("order.namePh")}" value="${escapeHtml(o.name || "")}" maxlength="60" required>
       <span class="field__err">${t("order.err.name")}</span>
     </div>
+    <div class="field">
+      <span class="field__label" id="lbl-pay">${t("order.pay")}</span>
+      <div class="seg seg--3 bank" role="group" aria-labelledby="lbl-pay">
+        <button type="button" class="seg__btn" data-pay="kaspi" aria-pressed="${o.pay === "kaspi"}"><span class="bank__dot"></span>Kaspi</button>
+        <button type="button" class="seg__btn" data-pay="halyk" aria-pressed="${o.pay === "halyk"}"><span class="bank__dot"></span>Halyk</button>
+        <button type="button" class="seg__btn" data-pay="cash" aria-pressed="${o.pay === "cash"}"><span class="bank__dot"></span>${t("order.cash")}</button>
+      </div>
+    </div>
     <div class="field" data-field="phone">
-      <label class="field__label" for="f-phone">${t("order.phone")}</label>
-      <span class="field__hint">${t("order.phoneHint")}</span>
+      <label class="field__label" for="f-phone" id="lbl-phone">${phone.label}</label>
+      <span class="field__hint" id="hint-phone">${phone.hint}</span>
       <input class="input" id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 7__ ___ __ __" value="${escapeHtml(o.phone || "")}" required>
       <span class="field__err">${t("order.err.phone")}</span>
-    </div>
-    <div class="field">
-      <span class="field__label" id="lbl-bank">${t("order.bank")}</span>
-      <div class="seg bank" role="group" aria-labelledby="lbl-bank">
-        <button type="button" class="seg__btn" data-bank="kaspi" aria-pressed="${o.bank === "kaspi"}"><span class="bank__dot"></span>Kaspi</button>
-        <button type="button" class="seg__btn" data-bank="halyk" aria-pressed="${o.bank === "halyk"}"><span class="bank__dot"></span>Halyk</button>
-      </div>
-    </div>
-    <div class="row2">
-      <div class="field" data-field="date">
-        <label class="field__label" for="f-date">${t("order.date")}</label>
-        <input class="input" id="f-date" name="date" type="date" min="${todayIso()}" value="${o.date || todayIso()}" required>
-        <span class="field__err">${t("order.err.date")}</span>
-      </div>
-      <div class="field" data-field="time">
-        <label class="field__label" for="f-time">${t("order.time")}</label>
-        <input class="input" id="f-time" name="time" type="time" value="${o.time || soonTime()}" required>
-        <span class="field__err">${t("order.err.time")}</span>
-      </div>
     </div>
     <div class="field">
       <label class="field__label" for="f-comment">${t("order.comment")} <small>(${t("order.optional")})</small></label>
       <textarea class="input" id="f-comment" name="comment" rows="3" maxlength="500" placeholder="${t("order.commentPh")}">${escapeHtml(o.comment || "")}</textarea>
     </div>
   </form>`;
-  foot.innerHTML = `${total}
-    <button type="submit" form="order-form" class="btn btn--wa btn--block">${icon("wa")}<span>${t("order.send")}</span></button>
-    <p class="note">${t("order.note")}</p>`;
+  renderFoot();
 }
 
-// ---------- Уақыт көмекшілері (Ақтау, UTC+5) ----------
+// ---------- Уақыт (Ақтау, UTC+5) — филиалдың ашық/жабық күйі үшін ----------
 function aktauNow() {
   const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Aqtau", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false,
+    timeZone: "Asia/Aqtau", hour: "2-digit", minute: "2-digit", hour12: false,
   }).formatToParts(new Date());
   const get = (type) => parts.find((p) => p.type === type).value;
-  return { date: `${get("year")}-${get("month")}-${get("day")}`, h: +get("hour") % 24, m: +get("minute") };
-}
-
-function todayIso() { return aktauNow().date; }
-
-function soonTime() {
-  const { h, m } = aktauNow();
-  let total = h * 60 + m + 40;
-  total = Math.ceil(total / 5) * 5 % (24 * 60);
-  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
-}
-
-function formatDate(iso) {
-  const [y, m, d] = iso.split("-");
-  return `${d}.${m}.${y}`;
+  return { h: +get("hour") % 24, m: +get("minute") };
 }
 
 // ---------- Телефон ----------
@@ -414,12 +507,14 @@ function readForm() {
   if (!f) return;
   const o = state.order;
   const val = (n) => (f.elements[n] ? f.elements[n].value.trim() : undefined);
-  if (o.type === "pickup") o.branch = val("branch") || o.branch;
-  else o.address = val("address");
+  if (o.type === "pickup") {
+    o.branch = val("branch") || o.branch;
+  } else {
+    o.zone = val("zone") || o.zone;
+    o.address = val("address");
+  }
   o.name = val("name");
   o.phone = val("phone");
-  o.date = val("date");
-  o.time = val("time");
   o.comment = val("comment");
 }
 
@@ -427,11 +522,10 @@ function validate() {
   const o = state.order;
   const errors = {
     branch: o.type === "pickup" && !o.branch,
-    address: o.type === "delivery" && (!o.address || o.address.length < 3),
+    zone: o.type === "delivery" && !zoneById(o.zone),
+    address: o.type === "delivery" && (!o.address || o.address.length < 2),
     name: !o.name || o.name.length < 2,
     phone: phoneDigits(o.phone || "").length !== 11,
-    date: !o.date,
-    time: !o.time,
   };
   let first = null;
   for (const [name, bad] of Object.entries(errors)) {
@@ -450,31 +544,101 @@ function validate() {
   return true;
 }
 
+// Хабарламаны басқа тілде құрастыру (ағылшынша таңдаса да, қызметкерлерге орысша кетеді)
+function inLang(lang, fn) {
+  const prev = LANG;
+  LANG = lang;
+  try { return fn(); } finally { LANG = prev; }
+}
+
 function buildMessage() {
   const o = state.order;
   const lines = cartLines();
+  const sub = cartTotal();
   const out = [];
   out.push(`*${t("wa.head")}*`, "");
   out.push(`*${t("wa.items")}:*`);
   lines.forEach((l, i) => {
     out.push(`${i + 1}. ${l.name} — ${l.qty} ${t("wa.pcs")} × ${formatPrice(l.price)} = ${formatPrice(l.price * l.qty)}`);
   });
-  out.push("", `*${t("wa.total")}: ${formatPrice(cartTotal())}*`, "");
+  out.push("");
+  if (o.type === "delivery") {
+    const d = deliveryInfo();
+    out.push(`${t("wa.subtotal")}: ${formatPrice(sub)}`);
+    out.push(`${t("wa.delivery")}: ${deliveryText(d)}`);
+    out.push(`*${t("wa.total")}: ${formatPrice(sub + d.fee)}${d.known ? "" : " + " + t("cart.delivery").toLowerCase()}*`, "");
+  } else {
+    out.push(`*${t("wa.total")}: ${formatPrice(sub)}*`, "");
+  }
   out.push(`*${t("wa.client")}:*`);
   out.push(`${t("wa.type")}: ${o.type === "pickup" ? t("order.pickup") : t("order.delivery")}`);
   if (o.type === "pickup") {
     const b = BRANCHES.find((x) => x.id === o.branch);
-    if (b) out.push(`${t("wa.branch")}: ${tr(b.name)}, ${tr(b.addr)}`);
+    if (b) out.push(`${t("wa.branch")}: ${branchText(b)}`);
   } else {
+    const z = zoneById(o.zone);
+    if (z) out.push(`${t("wa.zone")}: ${tr(z)}`);
     out.push(`${t("wa.address")}: ${o.address}`);
   }
   out.push(`${t("wa.name")}: ${o.name}`);
-  out.push(`${t("wa.phone")}: ${formatPhone(o.phone)}`);
-  out.push(`${t("wa.bank")}: ${o.bank === "kaspi" ? "Kaspi" : "Halyk"}`);
-  out.push(`${t("wa.date")}: ${formatDate(o.date)}`);
-  out.push(`${t("wa.time")}: ${o.time}`);
+  if (o.pay === "cash") {
+    out.push(`${t("wa.pay")}: ${t("order.cash")}`);
+    out.push(`${t("wa.contact")}: ${formatPhone(o.phone)}`);
+  } else {
+    out.push(`${t("wa.pay")}: ${o.pay === "halyk" ? "Halyk" : "Kaspi"} (${t("wa.remote")})`);
+    out.push(`${t("wa.phone")}: ${formatPhone(o.phone)}`);
+  }
   if (o.comment) out.push(`${t("wa.comment")}: ${o.comment}`);
   return out.join("\n");
+}
+
+// ---------- «Жеткізу тегін» 3D анимациясы ----------
+let wasFree = null;
+
+function checkFree() {
+  const free = cartTotal() >= FREE_DELIVERY_FROM;
+  if (wasFree === false && free) celebrate();
+  wasFree = free;
+}
+
+function celebrate() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    toast(`${t("free.done")} ${t("free.doneSub")}`);
+    return;
+  }
+  const old = $(".party");
+  if (old) old.remove();
+  let sparksHtml = "";
+  for (let i = 0; i < 26; i++) {
+    const a = (Math.PI * 2 * i) / 26;
+    const r = 120 + Math.random() * 110;
+    sparksHtml += `<i style="--dx:${Math.round(Math.cos(a) * r)}px;--dy:${Math.round(Math.sin(a) * r)}px;--dz:${Math.round(Math.random() * 160 - 40)}px;--d:${(0.7 + Math.random() * 0.5).toFixed(2)}s"></i>`;
+  }
+  const face = (cls, inner) => `<div class="cube__face ${cls}">${inner}</div>`;
+  const flame = `<svg viewBox="0 0 40 44" aria-hidden="true"><path d="${FLAME_PATH}" fill="#fff"/></svg>`;
+  const el = document.createElement("div");
+  el.className = "party";
+  el.setAttribute("role", "status");
+  el.innerHTML = `<div class="party__stage">
+      <div class="party__sparks">${sparksHtml}</div>
+      <div class="cube">
+        ${face("cube__face--front", "<b>0 ₸</b>")}
+        ${face("cube__face--back", "<b>0 ₸</b>")}
+        ${face("cube__face--right", icon("scooter"))}
+        ${face("cube__face--left", flame)}
+        ${face("cube__face--top", flame)}
+        ${face("cube__face--bottom", "")}
+      </div>
+    </div>
+    <p class="party__title">${t("free.done")}</p>
+    <p class="party__sub">${t("free.doneSub")}</p>`;
+  document.body.appendChild(el);
+  const close = () => {
+    el.classList.add("is-out");
+    setTimeout(() => el.remove(), 400);
+  };
+  el.addEventListener("click", close);
+  setTimeout(close, 3200);
 }
 
 function bindSheet() {
@@ -513,10 +677,19 @@ function bindSheet() {
       if (first) first.focus();
       return;
     }
-    const bank = el.closest("[data-bank]");
-    if (bank) {
-      state.order.bank = bank.dataset.bank;
-      $$("[data-bank]").forEach((b) => b.setAttribute("aria-pressed", String(b === bank)));
+    const pay = el.closest("[data-pay]");
+    if (pay) {
+      state.order.pay = pay.dataset.pay;
+      $$("[data-pay]").forEach((b) => b.setAttribute("aria-pressed", String(b === pay)));
+      const labels = payLabels(state.order.pay);
+      $("#lbl-phone").textContent = labels.label;
+      $("#hint-phone").textContent = labels.hint;
+      return;
+    }
+    const up = el.closest("[data-upsell]");
+    if (up) {
+      setQty(up.dataset.upsell, (state.cart[up.dataset.upsell] || 0) + 1);
+      bumpFab();
       return;
     }
     if (el.closest("[data-clear-done]")) {
@@ -535,6 +708,13 @@ function bindSheet() {
     if (field) field.classList.remove("is-invalid");
   });
 
+  sheet.addEventListener("change", (e) => {
+    if (e.target.id === "f-zone") {
+      readForm();
+      renderFoot();
+    }
+  });
+
   sheet.addEventListener("focusin", (e) => {
     if (e.target.id === "f-phone" && !e.target.value) e.target.value = "+7 ";
   });
@@ -543,7 +723,7 @@ function bindSheet() {
     e.preventDefault();
     readForm();
     if (!validate()) return;
-    const url = `https://wa.me/${CFG.whatsapp}?text=${encodeURIComponent(buildMessage())}`;
+    const url = `https://wa.me/${CFG.whatsapp}?text=${encodeURIComponent(inLang(LANG === "en" ? "ru" : LANG, buildMessage))}`;
     state.lastWaUrl = url;
     state.view = "done";
     renderSheet();
@@ -568,6 +748,13 @@ function bindSheet() {
 
   $("#fab").addEventListener("click", () => openSheet("cart"));
   $$("[data-open-cart]").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); openSheet("cart"); }));
+}
+
+// «ЖК Дукат, 17 мкр, 1» / «27 мкр, 10/1» — атау мекенжайда болса, қайталамаймыз
+function branchText(b) {
+  const name = tr(b.name);
+  const addr = tr(b.addr);
+  return addr.startsWith(name) ? addr : `${name}, ${addr}`;
 }
 
 // «Өзім аламын» қолжетімді филиалдар
@@ -661,12 +848,32 @@ function logoTilt() {
   hero.addEventListener("pointerleave", () => { logo.style.transform = ""; });
 }
 
+// ---------- 24/7 филиалдар (hero астында) ----------
+function renderClockPlaces() {
+  const box = $("#clock-places");
+  if (!box) return;
+  box.innerHTML = BRANCHES.filter((b) => b.allDay).map((b) => {
+    const text = branchText(b);
+    return `<a class="clock__place" href="${b.link}" target="_blank" rel="noopener">${icon("pin")}<span>${escapeHtml(text)}</span></a>`;
+  }).join("");
+}
+
+// ---------- Акция баннерлері ----------
+function bindPromos() {
+  $$("[data-promo-cat]").forEach((a) => a.addEventListener("click", (e) => {
+    e.preventDefault();
+    $("#menu").scrollIntoView({ behavior: "smooth" });
+    selectCat(a.dataset.promoCat);
+  }));
+}
+
 // ---------- Бастау ----------
 function renderAll() {
   renderTabs();
   renderMenu();
   renderFab();
   renderBranches();
+  renderClockPlaces();
   if ($("#sheet").classList.contains("is-open")) { readForm(); renderSheet(); }
 }
 
@@ -675,6 +882,7 @@ document.addEventListener("DOMContentLoaded", () => {
   $("#ig-link").href = CFG.instagram;
   bindMenu();
   bindSheet();
+  bindPromos();
   renderAll();
   sparks();
   logoTilt();
