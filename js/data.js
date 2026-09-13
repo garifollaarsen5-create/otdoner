@@ -3,6 +3,7 @@
 
 const CATEGORIES = [
   { id: "new",      kz: "Жаңалықтар", ru: "Новинки",  en: "New" },
+  { id: "combo",    kz: "Комбо мен сеттер", ru: "Комбо и сеты", en: "Combos & sets" },
   { id: "doner",    kz: "Донер",      ru: "Донер",    en: "Doner" },
   { id: "shawarma", kz: "Шаурма",     ru: "Шаурма",   en: "Shawarma" },
   { id: "baguette", kz: "Багет",      ru: "Багет",    en: "Baguette" },
@@ -432,3 +433,60 @@ const DELIVERY_ZONES = [
   { id: "tolkyn3",  kz: "Толқын 3",        ru: "Толкын 3",        en: "Tolkyn 3",         price: null },
   { id: "other",    kz: "Тізімде жоқ мекенжай", ru: "Другой адрес", en: "Other address", price: null, other: true },
 ];
+
+// ---- Комбо мен сеттер ----
+// set: [id немесе "id:көлем", саны, қосымша белгі] — құрамы мәзірдегі тағамдардан алынады
+// gifts: сыйлыққа берілетіндер. «Чикен N дана» үшін: ["chicken-pcs", N]
+// Комбоның ескі бағасы (сызылған) құрамының бағасынан автоматты есептеледі.
+const SET_EXTRAS = {
+  sauce:    { kz: "соус",      ru: "соус",      en: "sauce" },
+  jalapeno: { kz: "халапеньо", ru: "халапеньо", en: "jalapeño" },
+};
+
+MENU.push(
+  {
+    id: "combo-chicken", cat: "combo", img: "combo-chicken", price: 2990, showOld: true,
+    name: { kz: "Комбо тауық етінен", ru: "Комбо куриный", en: "Chicken combo" },
+    set: [["doner-chicken", 1], ["fries", 1, "L"], ["cola:05", 1]],
+  },
+  {
+    id: "combo-beef", cat: "combo", img: "combo-beef", price: 3090, showOld: true,
+    name: { kz: "Комбо сиыр етінен", ru: "Комбо говяжий", en: "Beef combo" },
+    set: [["doner-beef", 1], ["fries", 1, "L"], ["cola:05", 1]],
+  },
+  {
+    id: "combo-mix", cat: "combo", img: "combo-mix", price: 3090, showOld: true,
+    name: { kz: "Комбо ассорти", ru: "Комбо ассорти", en: "Mixed combo" },
+    set: [["doner-mix", 1], ["fries", 1, "L"], ["cola:05", 1]],
+  },
+  {
+    id: "set-dostar", cat: "combo", img: "set-dostar", price: 5490, people: "2",
+    name: { kz: "«Достар» сеті", ru: "Сет «Достар»", en: "Dostar set" },
+    set: [["doner-chicken", 2], ["fries", 2, "L"]],
+    gifts: [["cola:1", 1], ["sauce", 2], ["jalapeno", 2]],
+  },
+  {
+    id: "set-chicken", cat: "combo", img: "set-chicken", price: 11290, people: "4–5",
+    name: { kz: "«Тауық» сеті", ru: "Сет «Куриный»", en: "Chicken set" },
+    set: [["doner-chicken", 4], ["chicken-pcs", 8], ["fries", 2, "L"]],
+    gifts: [["cola:1", 1], ["sauce", 2], ["jalapeno", 4]],
+  },
+  {
+    id: "set-assorti", cat: "combo", img: "set-assorti", price: 11290, people: "4–5",
+    name: { kz: "«Ассорти» сеті", ru: "Сет «Ассорти»", en: "Mixed set" },
+    set: [["doner-chicken", 2], ["doner-beef", 2], ["pizza-pepperoni", 1], ["fries", 2, "L"]],
+    gifts: [["cola:1", 1], ["jalapeno", 4], ["sauce", 2]],
+  },
+  {
+    id: "set-otbasy", cat: "combo", img: "set-otbasy", price: 13490, people: "6–7",
+    name: { kz: "«Отбасы» сеті", ru: "Сет «Отбасы»", en: "Otbasy family set" },
+    set: [["doner-chicken", 3], ["chicken-pcs", 9], ["fries", 3, "L"], ["pizza-pepperoni", 1]],
+    gifts: [["cola:1", 2], ["sauce", 5], ["jalapeno", 3]],
+  },
+  {
+    id: "set-dastarkhan", cat: "combo", img: "set-dastarkhan", price: 21390, people: "8–10",
+    name: { kz: "«Дастархан» сеті", ru: "Сет «Дастархан»", en: "Dastarkhan feast set" },
+    set: [["doner-chicken", 4], ["chicken-pcs", 15], ["pizza-pepperoni", 1], ["pizza-margherita", 1], ["nuggets", 2], ["fries", 3, "L"]],
+    gifts: [["cola:1", 3], ["sauce", 5], ["jalapeno", 4]],
+  },
+);

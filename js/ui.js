@@ -74,6 +74,7 @@ const ICONS = {
   wa: '<path d="M4 20l1.2-3.9A8 8 0 1 1 8 19z"/><path d="M9.2 8.6c-.3.9 0 2.3 1.4 3.9 1.5 1.6 3 2.2 3.9 1.9l.9-1.1-1.7-1.1-.9.7c-.7-.3-1.4-1-1.8-1.7l.7-.9-1-1.8z" fill="currentColor" stroke-width="1"/>',
   ig: '<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.2" cy="6.8" r=".9" fill="currentColor"/>',
   map: '<path d="M9 5 3.5 7v12L9 17l6 2 5.5-2V5L15 7z"/><path d="M9 5v12M15 7v12"/>',
+  people: '<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M16 14.2c2.9.2 5 2.4 5 5.8"/>',
   trash: '<path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/>',
 };
 

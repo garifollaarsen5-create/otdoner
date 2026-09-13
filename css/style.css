@@ -862,3 +862,13 @@ input[type="date"].input, input[type="time"].input { color-scheme: dark; }
   animation: up .6s cubic-bezier(.2, .8, .2, 1) .5s both;
 }
 .party__sub { color: #d6c9be; max-width: 30ch; margin: 12px auto 0; animation: up .6s cubic-bezier(.2, .8, .2, 1) .65s both; }
+
+/* ---------- Комбо мен сеттер ---------- */
+.set { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 4px; font-size: 14.5px; color: #d6c9be; }
+.set li { position: relative; padding-left: 16px; line-height: 1.35; }
+.set li::before { content: ""; position: absolute; left: 2px; top: .55em; width: 6px; height: 6px; border-radius: 50%; background: var(--ember); }
+.set__gifts { margin: 10px 0 0; font-size: 13.5px; line-height: 1.4; color: var(--glow); }
+.set__gifts b { color: var(--ash); font-weight: 700; }
+.card__people { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 4px 10px 4px 8px; border-radius: 999px; background: var(--coal-3); border: 1px solid var(--line); color: var(--ash); font-size: 13px; font-weight: 700; align-self: flex-start; }
+.card__people svg { width: 16px; height: 16px; color: var(--glow); }
+.card__old { display: block; font-family: var(--f-body); font-size: 13.5px; font-weight: 600; color: var(--smoke); text-decoration-thickness: 1.5px; margin-bottom: 1px; }

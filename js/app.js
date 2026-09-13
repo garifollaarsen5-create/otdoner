@@ -67,6 +67,31 @@ function keyFor(item, over = {}) {
   return parts.join(":");
 }
 
+// ---------- Комбо / сет құрамы ----------
+function setLine([ref, qty, note]) {
+  if (ref === "chicken-pcs") return t("set.chickenPcs").replace("{n}", qty);
+  if (SET_EXTRAS[ref]) return `${qty} ${tr(SET_EXTRAS[ref])}`;
+  const it = findItem(ref);
+  let name = it ? it.name : ref;
+  // «Пепперони» → «Пицца «Пепперони»», сет ішінде түсінікті болу үшін
+  if (it && it.item.cat === "pizza" && !/пицц|pizza/i.test(name)) name = `${t("set.pizza")} «${name}»`;
+  return `${qty > 1 ? `${qty}× ` : ""}${name}${note ? ` (${note})` : ""}`;
+}
+
+// Комбоның құрамын жеке алғандағы бағасы (сызылған баға)
+function setFullPrice(item) {
+  return (item.set || []).reduce((sum, [ref, qty]) => {
+    const it = SET_EXTRAS[ref] || ref === "chicken-pcs" ? null : findItem(ref);
+    return sum + (it ? it.price * qty : 0);
+  }, 0);
+}
+
+function setHtml(item) {
+  if (!item.set) return "";
+  const gifts = item.gifts ? `<p class="set__gifts"><b>${t("set.gift")}:</b> ${item.gifts.map((g) => escapeHtml(setLine(g))).join(", ")}</p>` : "";
+  return `<ul class="set">${item.set.map((l) => `<li>${escapeHtml(setLine(l))}</li>`).join("")}</ul>${gifts}`;
+}
+
 // ---------- Мәзір ----------
 function renderTabs() {
   const tabs = $("#tabs");
@@ -131,11 +156,13 @@ function renderMenu() {
       ${stopped ? `<span class="card__stop">${t("menu.stopped")}</span>` : item.isNew ? `<span class="card__new">${t("menu.new")}</span>` : ""}
       <div class="card__body">
         <h3 class="card__name">${escapeHtml(tr(item.name))}</h3>
+        ${item.people ? `<span class="card__people">${icon("people")}${t("set.people").replace("{n}", item.people)}</span>` : ""}
         ${item.desc ? `<p class="card__desc">${escapeHtml(tr(item.desc))}</p>` : ""}
+        ${setHtml(item)}
         ${flavors}
         ${sizes}
         <div class="card__foot">
-          <span class="card__price">${formatPrice(sel.price)}</span>
+          <span class="card__price">${item.showOld && setFullPrice(item) > sel.price ? `<s class="card__old">${formatPrice(setFullPrice(item))}</s>` : ""}${formatPrice(sel.price)}</span>
           ${action}
         </div>
       </div>
