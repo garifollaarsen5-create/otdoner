@@ -1,5 +1,6 @@
 // ===== otdoner · стоп-лист =====
 // Тағамдардың уақытша қолжетімсіз тізімі stopmenu панелінен келеді (Supabase).
+// item_id: "cola" — бүкіл тағам стопта; "cola:1", "fuse:1:peach" — тек сол көлем/дәм (корзина кілті).
 
 const StopList = (() => {
   const cfg = window.OTDONER_CONFIG;
@@ -25,6 +26,8 @@ const StopList = (() => {
     load,
     configured,
     has: (id) => ids.has(String(id)),
+    // корзина кілті стопта ма: бүкіл тағам немесе дәл осы нұсқа
+    hasKey: (key) => ids.has(String(key).split(":")[0]) || ids.has(String(key)),
     get ids() { return ids; },
   };
 })();

@@ -379,6 +379,9 @@ a { color: inherit; }
 .flavors__btn[aria-pressed="true"] { background: var(--coal-4); border-color: var(--glow); color: var(--glow); }
 .sizes__btn[aria-pressed="true"] { background: var(--ash); color: var(--coal); border-color: var(--ash); }
 .sizes__btn[aria-pressed="true"] small { color: var(--coal-4); }
+/* стоптағы көлем/дәм */
+.sizes__btn:disabled, .flavors__btn:disabled { opacity: .4; cursor: not-allowed; }
+.flavors__btn:disabled { text-decoration: line-through; }
 
 .add {
   display: inline-flex; align-items: center; gap: 8px;

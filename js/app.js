@@ -49,7 +49,7 @@ function saveCart() {
 }
 
 function setQty(key, qty) {
-  if (qty > 0 && StopList.has(key.split(":")[0])) return;
+  if (qty > 0 && StopList.hasKey(key)) return;
   if (qty <= 0) delete state.cart[key];
   else state.cart[key] = Math.min(qty, 99);
   saveCart();
@@ -65,6 +65,26 @@ function keyFor(item, over = {}) {
     parts.push(over.f || state.flavor[item.id] || item.flavors[0].id);
   }
   return parts.join(":");
+}
+
+// Таңдалған көлем/дәм стопта болса — бар нұсқаға ауысамыз (алдымен дәмін, сосын көлемін сақтап)
+function pickKey(item) {
+  const key = keyFor(item);
+  if (!StopList.hasKey(key)) return key;
+  const [, v0, f0] = key.split(":");
+  const vs = item.variants ? item.variants.map((v) => v.id) : [undefined];
+  const fs = item.flavors ? item.flavors.map((f) => f.id) : [undefined];
+  const tries = [
+    ...vs.map((v) => keyFor(item, { v, f: f0 })),
+    ...fs.map((f) => keyFor(item, { v: v0, f })),
+    ...vs.flatMap((v) => fs.map((f) => keyFor(item, { v, f }))),
+  ];
+  return tries.find((k) => !StopList.hasKey(k)) || key;
+}
+
+// Дәмнің барлық көлемі стопта ма
+function flavorOut(item, f) {
+  return (item.variants || [{}]).every((v) => StopList.hasKey(keyFor(item, { v: v.id, f })));
 }
 
 // ---------- Комбо / сет құрамы ----------
@@ -128,24 +148,27 @@ function renderMenu() {
   grid.setAttribute("aria-labelledby", `tab-${state.cat}`);
   grid.classList.toggle("grid--solo", items.length === 1);
   grid.innerHTML = items.map((item) => {
-    const key = keyFor(item);
+    const key = pickKey(item);
+    const [, curV, curF] = key.split(":");
     const qty = state.cart[key] || 0;
     const sel = findItem(key);
     const flavors = item.flavors ? `
       <div class="flavors" role="group" aria-label="${t("menu.flavor")}">
         ${item.flavors.map((f) => `
           <button type="button" class="flavors__btn" data-flavor="${item.id}:${f.id}"
-            aria-pressed="${key === keyFor(item, { f: f.id })}">${escapeHtml(tr(f))}</button>
+            aria-pressed="${f.id === curF}" ${flavorOut(item, f.id) ? "disabled" : ""}>${escapeHtml(tr(f))}</button>
         `).join("")}
       </div>` : "";
     const sizes = item.variants ? `
       <div class="sizes" role="group" aria-label="${t("menu.size")}" style="grid-template-columns:repeat(${item.variants.length},1fr)">
-        ${item.variants.map((v) => `
-          <button type="button" class="sizes__btn" data-variant="${item.id}:${v.id}"
-            aria-pressed="${key === keyFor(item, { v: v.id })}">${escapeHtml(tr(v))}<small>${formatPrice(v.price)}</small></button>
-        `).join("")}
+        ${item.variants.map((v) => {
+          const out = StopList.hasKey(keyFor(item, { v: v.id, f: curF }));
+          return `<button type="button" class="sizes__btn" data-variant="${item.id}:${v.id}"
+            aria-pressed="${v.id === curV}" ${out ? "disabled" : ""}>${escapeHtml(tr(v))}<small>${out ? t("menu.stopped") : formatPrice(v.price)}</small></button>`;
+        }).join("")}
       </div>` : "";
-    const stopped = StopList.has(item.id);
+    // бүкіл тағам немесе оның барлық нұсқасы стопта
+    const stopped = StopList.hasKey(key);
     const action = stopped
       ? `<span class="stop-tag">${t("menu.stopped")}</span>`
       : qty > 0
@@ -316,7 +339,9 @@ function upsellHtml() {
   const inCart = new Set(Object.keys(state.cart).map((k) => k.split(":")[0]));
   const items = UPSELL_IDS
     .map((id) => MENU.find((m) => m.id === id))
-    .filter((m) => m && !inCart.has(m.id) && !StopList.has(m.id))
+    .filter((m) => m && !inCart.has(m.id))
+    .map((m) => findItem(pickKey(m)))
+    .filter((sel) => !StopList.hasKey(sel.key))
     .slice(0, 4);
   if (!items.length) return "";
   const left = freeLeft();
@@ -324,10 +349,8 @@ function upsellHtml() {
   return `<div class="upsell">
     <p class="upsell__title">${title}</p>
     <div class="upsell__row">
-      ${items.map((m) => {
-        const key = keyFor(m);
-        const sel = findItem(key);
-        return `<button type="button" class="upsell__item" data-upsell="${key}" aria-label="${t("menu.addAria")}: ${escapeHtml(sel.name)}">
+      ${items.map((sel) => {
+        return `<button type="button" class="upsell__item" data-upsell="${sel.key}" aria-label="${t("menu.addAria")}: ${escapeHtml(sel.name)}">
           <span class="upsell__img">${sel.img ? `<img src="img/menu/${sel.img}-s.webp" alt="" loading="lazy">` : ""}</span>
           <span class="upsell__name">${escapeHtml(sel.name)}</span>
           <span class="upsell__price">${icon("plus")}${formatPrice(sel.price)}</span>
@@ -814,7 +837,7 @@ function renderBranches() {
 // ---------- Стоп-лист ----------
 // Стопқа түскен тағамдар корзинадан алынады
 function pruneStopped() {
-  const removed = Object.keys(state.cart).filter((key) => StopList.has(key.split(":")[0]));
+  const removed = Object.keys(state.cart).filter((key) => StopList.hasKey(key));
   if (!removed.length) return false;
   removed.forEach((key) => delete state.cart[key]);
   saveCart();
