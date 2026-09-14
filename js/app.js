@@ -473,6 +473,7 @@ function renderSheet() {
       </select>
       <span class="field__err">${t("order.err.branch")}</span>
     </div>` : `
+    <p class="notice" role="note">${icon("pin")}<span>${t("order.zoneOnly")}</span></p>
     ${freeBarHtml()}
     <div class="field" data-field="zone">
       <label class="field__label" for="f-zone">${t("order.zone")}</label>

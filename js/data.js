@@ -431,8 +431,8 @@ const DELIVERY_ZONES = [
   { id: "tolkyn1",  kz: "Толқын 1",        ru: "Толкын 1",        en: "Tolkyn 1",         price: null, range: "800–900" },
   { id: "tolkyn2",  kz: "Толқын 2",        ru: "Толкын 2",        en: "Tolkyn 2",         price: null },
   { id: "tolkyn3",  kz: "Толқын 3",        ru: "Толкын 3",        en: "Tolkyn 3",         price: null },
-  { id: "other",    kz: "Тізімде жоқ мекенжай", ru: "Другой адрес", en: "Other address", price: null, other: true },
 ];
+// Жеткізу тек осы тізімдегі аудандарға — басқа мекенжай таңдалмайды.
 
 // ---- Комбо мен сеттер ----
 // set: [id немесе "id:көлем", саны, қосымша белгі] — құрамы мәзірдегі тағамдардан алынады

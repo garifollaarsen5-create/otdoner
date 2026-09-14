@@ -547,6 +547,14 @@ input[type="date"].input, input[type="time"].input { color-scheme: dark; }
 .bank .seg__btn[aria-pressed="true"] .bank__dot { background: #fff; }
 
 .note { color: var(--smoke); font-size: 13px; text-align: center; margin: 10px 0 0; }
+/* Жеткізу: тек тізімдегі аудандарға */
+.notice {
+  display: flex; align-items: flex-start; gap: 10px; margin: 0;
+  padding: 12px 14px; border-radius: 14px;
+  background: rgba(255, 159, 67, .1); border: 1px solid rgba(255, 159, 67, .35);
+  color: var(--ash); font-size: 14px; font-weight: 600; line-height: 1.4;
+}
+.notice svg { width: 20px; height: 20px; flex: none; color: var(--glow); margin-top: 1px; }
 
 .done { text-align: center; padding: 40px 8px 12px; }
 .done__icon { width: 76px; height: 76px; border-radius: 50%; background: rgba(37, 211, 102, .14); color: #25d366; display: grid; place-items: center; margin: 0 auto 18px; }
