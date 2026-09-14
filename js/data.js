@@ -127,7 +127,7 @@ const MENU = [
     desc: null,
   },
   {
-    id: "twister", cat: "new", isNew: true, img: "twister", price: 1690,
+    id: "twister", cat: "new", isNew: true, img: "twister", price: 1790,
     name: { kz: "Твистер", ru: "Твистер" },
     desc: null,
   },
