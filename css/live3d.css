@@ -1,0 +1,134 @@
+/* =========================================================
+   ОТ ДОНЕР · 3D / «тірі сайт» қабаты (жергілікті нұсқа)
+   Өшіру үшін: index.html-дегі live3d.css пен live3d.js жолдарын алып тастаңыз.
+   ========================================================= */
+
+/* ---- Бүкіл беттегі 3D ұшқындар ---- */
+#embers3d { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+main, .footer { position: relative; z-index: 1; }
+
+/* ---- Hero видео фоны (Higgsfield · Seedance) ---- */
+.hero__video { position: absolute; inset: 0; z-index: -2; overflow: hidden; pointer-events: none; }
+.hero__video video {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 70% 50%;
+  opacity: 0; transition: opacity 1.2s ease; filter: saturate(1.1) contrast(1.05);
+}
+.hero__video video.is-on { opacity: .62; }
+/* мәтін оқылуы үшін: сол жақ пен төменгі жағы көмір түсіне ауысады */
+.hero__video::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, var(--coal) 8%, rgba(26, 20, 17, .82) 38%, rgba(26, 20, 17, .25) 70%, rgba(26, 20, 17, .45) 100%),
+    linear-gradient(180deg, rgba(26, 20, 17, .7) 0%, transparent 22%, transparent 70%, var(--coal) 100%);
+}
+@media (max-width: 899px) {
+  .hero__video { bottom: auto; height: 62%; }
+  .hero__video video { object-position: 50% 60%; }
+  .hero__video video.is-on { opacity: .8; }
+  .hero__video::after {
+    background: linear-gradient(180deg, rgba(26, 20, 17, .35) 0%, rgba(26, 20, 17, .15) 30%, rgba(26, 20, 17, .6) 70%, var(--coal) 100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) { .hero__video video { display: none; } }
+
+/* ---- 3D карточкалар ---- */
+.grid { perspective: 1200px; }
+.card, .promo, .why__item {
+  transform-style: preserve-3d;
+  transition: transform .5s cubic-bezier(.2, .8, .2, 1), box-shadow .5s, border-color .3s;
+}
+.card.is-tilt, .promo.is-tilt, .why__item.is-tilt {
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-6px);
+  transition: transform .1s linear, box-shadow .3s, border-color .3s;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .7), 0 0 0 1px rgba(255, 140, 60, .25), 0 20px 50px -25px rgba(255, 106, 61, .55);
+  border-color: rgba(255, 140, 60, .35);
+}
+/* жарқыл тінтуірдің соңынан жүреді */
+.card::after, .promo::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 3;
+  background: radial-gradient(420px circle at var(--gx, 50%) var(--gy, 0%), rgba(255, 170, 90, .16), transparent 45%);
+  opacity: 0; transition: opacity .3s;
+}
+.card.is-tilt::after, .promo.is-tilt::after { opacity: 1; }
+
+/* тағам тірі сияқты: қалқып тұрады, тінтуірге қарай қозғалады */
+.card__media img {
+  transform: translate3d(var(--px, 0px), var(--py, 0px), 0) scale(var(--ps, 1)) rotate(var(--pr, 0deg));
+  transition: transform .6s cubic-bezier(.2, .8, .2, 1), filter .4s;
+  will-change: transform;
+}
+.card.is-tilt .card__media img {
+  --ps: 1.09;
+  transition: transform .12s linear, filter .4s;
+  filter: drop-shadow(0 30px 26px rgba(0, 0, 0, .6)) drop-shadow(0 0 22px rgba(255, 120, 40, .25));
+}
+.card__media { overflow: hidden; }
+.card__media::after {
+  /* астындағы шоқ «дем алады» */
+  content: ""; position: absolute; left: 10%; right: 10%; bottom: 4%; height: 30%; pointer-events: none;
+  background: radial-gradient(50% 50% at 50% 60%, rgba(255, 130, 40, .55), transparent 70%);
+  filter: blur(8px); opacity: .5; mix-blend-mode: screen;
+}
+.card__media > img { z-index: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .card__media img { animation: food-float 4.6s ease-in-out var(--fd, 0s) infinite; }
+  .card.is-tilt .card__media img { animation-play-state: paused; }
+  .card__media::after { animation: coal-breathe 2.8s ease-in-out var(--fd, 0s) infinite; }
+  .promo__imgs img { animation: food-float 5.2s ease-in-out infinite; }
+  .promo__imgs img:nth-child(2) { animation-delay: -1.7s; }
+  .promo__imgs img:nth-child(3) { animation-delay: -3.1s; }
+
+  /* категория ауысқанда карточкалар 3D-ша аударылып шығады */
+  .card.is-enter { animation: card-in .8s cubic-bezier(.2, .9, .25, 1.15) both; animation-delay: calc(var(--i, 0) * 70ms); }
+  .card.is-enter .card__media img { animation: food-drop .9s cubic-bezier(.3, 1.4, .5, 1) both, food-float 4.6s ease-in-out 1s infinite; animation-delay: calc(var(--i, 0) * 70ms + 120ms), calc(var(--i, 0) * 70ms + 1s); }
+}
+@keyframes food-float {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  50% { translate: 0 -7px; rotate: -1.2deg; }
+}
+@keyframes coal-breathe { 0%, 100% { opacity: .35; transform: scaleX(.92); } 50% { opacity: .75; transform: scaleX(1.05); } }
+@keyframes card-in {
+  from { opacity: 0; transform: perspective(900px) rotateX(-38deg) rotateY(8deg) translate3d(0, 60px, -120px) scale(.92); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes food-drop {
+  from { opacity: 0; translate: 0 -60px; scale: 1.25; }
+  to { opacity: 1; translate: 0 0; scale: 1; }
+}
+
+/* ---- Мәзірдегі 3D модельдер ---- */
+.m3d-btn {
+  position: absolute; right: 12px; bottom: 12px; z-index: 4;
+  display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px 0 10px;
+  border: 1px solid rgba(255, 170, 90, .45); border-radius: 999px; cursor: pointer;
+  background: rgba(26, 20, 17, .72); color: #ffcf9a; backdrop-filter: blur(6px);
+  font: 800 13px/1 var(--f-display); letter-spacing: .02em;
+  box-shadow: 0 0 0 0 rgba(255, 106, 61, .5); transition: background .2s, transform .15s, color .2s;
+}
+.m3d-btn svg { width: 18px; height: 18px; }
+.m3d-btn:hover { background: var(--ember); color: #fff; border-color: var(--ember); }
+.m3d-btn:active { transform: scale(.94); }
+@media (prefers-reduced-motion: no-preference) { .m3d-btn { animation: m3d-pulse 2.6s ease-out infinite; } }
+@keyframes m3d-pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 106, 61, .45); } 70%, 100% { box-shadow: 0 0 0 12px rgba(255, 106, 61, 0); } }
+.card__media.is-3d .m3d-btn { background: var(--ember); color: #fff; border-color: var(--ember); animation: none; }
+.card__media.is-3d .m3d-btn span::after { content: " \2715"; }
+.card__media.is-3d > img { opacity: 0; transform: scale(.85); transition: opacity .35s, transform .35s; }
+.card__media.is-loading::before {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 38px; height: 38px; margin: -19px 0 0 -19px; z-index: 3;
+  border-radius: 50%; border: 3px solid rgba(255, 170, 90, .25); border-top-color: var(--glow); animation: m3d-spin .8s linear infinite;
+}
+@keyframes m3d-spin { to { transform: rotate(360deg); } }
+.m3d-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; cursor: grab; touch-action: pan-y; animation: m3d-in .5s ease both; }
+.m3d-canvas:active { cursor: grabbing; }
+@keyframes m3d-in { from { opacity: 0; } }
+
+/* ---- Корзинаға ұшатын тағам + ұшқын шашырауы ---- */
+.fly-food { position: fixed; left: 0; top: 0; z-index: 90; pointer-events: none; width: 120px; height: 90px; object-fit: contain;
+  filter: drop-shadow(0 14px 18px rgba(0, 0, 0, .6)); will-change: transform; }
+.burst-spark { position: fixed; left: 0; top: 0; z-index: 91; width: 6px; height: 6px; border-radius: 50%; pointer-events: none;
+  background: #ffcf7a; box-shadow: 0 0 10px 3px rgba(255, 120, 40, .9); }
+
+@media (prefers-reduced-motion: reduce) {
+  #embers3d { display: none; }
+}

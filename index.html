@@ -15,6 +15,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Unbounded:wght@700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/live3d.css">
   <script src="js/config.js" defer></script>
   <script src="js/data.js" defer></script>
   <script src="js/i18n.js" defer></script>
@@ -24,6 +25,7 @@
   <script src="js/reviews.js" defer></script>
 </head>
 <body>
+<canvas id="embers3d" aria-hidden="true"></canvas>
 
 <header class="header">
   <div class="wrap header__row">
@@ -49,6 +51,11 @@
 <main>
   <!-- ===== Hero ===== -->
   <section class="hero" aria-labelledby="hero-title">
+    <div class="hero__video" aria-hidden="true">
+      <video muted autoplay loop playsinline preload="auto" poster="img/hero-fire.jpg">
+        <source src="img/hero-fire.mp4" type="video/mp4">
+      </video>
+    </div>
     <div class="sparks" aria-hidden="true"></div>
     <div class="wrap hero__grid">
       <h1 class="hero__title" id="hero-title">
@@ -270,5 +277,8 @@
   <img alt="">
 </div>
 
+<!-- 3D / тірі сайт қабаты -->
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+<script src="js/live3d.js" defer></script>
 </body>
 </html>
