@@ -22,11 +22,17 @@ main, .footer { position: relative; z-index: 1; }
     linear-gradient(180deg, rgba(26, 20, 17, .7) 0%, transparent 22%, transparent 70%, var(--coal) 100%);
 }
 @media (max-width: 899px) {
-  .hero__video { bottom: auto; height: 62%; }
-  .hero__video video { object-position: 50% 60%; }
-  .hero__video video.is-on { opacity: .8; }
+  /* тік экранда кадрды кеспей, шіш пен шоқты толық көрсету (16:9 жолақ) */
+  .hero__video {
+    top: 110px; bottom: auto; left: 50%; right: auto;
+    width: 125%; height: auto; aspect-ratio: 16 / 9; transform: translateX(-50%);
+  }
+  .hero__video video { object-position: 50% 50%; }
+  .hero__video video.is-on { opacity: .85; }
   .hero__video::after {
-    background: linear-gradient(180deg, rgba(26, 20, 17, .35) 0%, rgba(26, 20, 17, .15) 30%, rgba(26, 20, 17, .6) 70%, var(--coal) 100%);
+    background:
+      radial-gradient(ellipse 62% 75% at 50% 50%, transparent 45%, var(--coal) 100%),
+      linear-gradient(180deg, var(--coal) 0%, transparent 15%, transparent 72%, var(--coal) 100%);
   }
 }
 @media (prefers-reduced-motion: reduce) { .hero__video video { display: none; } }
